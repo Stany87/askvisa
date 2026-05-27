@@ -2,7 +2,7 @@
 require_once __DIR__ . '/auth.php';
 
 if (!empty($_SESSION['agent_id'])) {
-  header('Location: dashboard.php');
+  header('Location: crm/dashboard.php');
   exit;
 }
 
@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $email = trim($_POST['email'] ?? '');
   $password = $_POST['password'] ?? '';
   if (login($email, $password)) {
-    header('Location: dashboard.php');
+    header('Location: crm/dashboard.php');
     exit;
   }
   $error = 'Invalid email or password.';

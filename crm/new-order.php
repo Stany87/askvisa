@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/../auth.php';
 requireLogin();
 $agent = getAgent();
 $countries = getCountries();
@@ -41,7 +41,7 @@ $countries = getCountries();
 
           <div class="country-list">
             <?php foreach ($countries as $c): ?>
-            <a href="../index.php?country=<?= urlencode($c['country_name']) ?>&source=b2b&agent_id=<?= $agent['id'] ?>&auto_open=chat"
+            <a href="../../index.php?country=<?= urlencode($c['country_name']) ?>&source=b2b&agent_id=<?= $agent['id'] ?>&auto_open=chat"
                target="_blank" class="country-option">
               <span class="co-name"><?= htmlspecialchars($c['country_name']) ?></span>
               <span class="co-arrow">→</span>

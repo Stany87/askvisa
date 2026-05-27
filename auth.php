@@ -59,14 +59,14 @@ function login($email, $password)
 function logout()
 {
     session_destroy();
-    header('Location: login.php');
+    header('Location: ../login.php');
     exit;
 }
 
 function requireLogin()
 {
     if (empty($_SESSION['agent_id'])) {
-        header('Location: login.php');
+        header('Location: ../login.php');
         exit;
     }
 }
