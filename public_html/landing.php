@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <title>Ask Visa â€“ Visa made simple, approved fast</title>
+    <title>Ask Visa – Visa made simple, approved fast</title>
     <link rel="icon" href="assets/ask-visa-logo-final red.png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -1216,11 +1216,11 @@
             <i class="fas fa-plane search-icon"></i>
             <select name="country" required>
                 <option value="" disabled selected>Where are you flying to?</option>
-                <option value="Thailand">ðŸ‡¹ðŸ‡­ Thailand</option>
-                <option value="Singapore">ðŸ‡¸ðŸ‡¬ Singapore</option>
-                <option value="Malaysia">ðŸ‡²ðŸ‡¾ Malaysia</option>
-                <option value="Vietnam">ðŸ‡»ðŸ‡³ Vietnam</option>
-                <option value="Dubai (UAE)">ðŸ‡¦ðŸ‡ª Dubai (UAE)</option>
+                <option value="Thailand">🇹🇭 Thailand</option>
+                <option value="Singapore">🇸🇬 Singapore</option>
+                <option value="Malaysia">🇲🇾 Malaysia</option>
+                <option value="Vietnam">🇻🇳 Vietnam</option>
+                <option value="Dubai (UAE)">🇦🇪 Dubai (UAE)</option>
             </select>
             <button type="submit" class="search-btn">Explore <i class="fas fa-arrow-right"></i></button>
         </form>
@@ -1248,7 +1248,7 @@
                     </div>
                     <div class="card-content">
                         <h3 class="country-name">Thailand</h3>
-                        <p class="visa-info">Express e-Visa â€¢ Multi & Single Entry</p>
+                        <p class="visa-info">Express e-Visa • Multi & Single Entry</p>
                         <div class="processing-time"><i class="fas fa-clock"></i> 4 Days Processing</div>
                     </div>
                 </a>
@@ -1261,7 +1261,7 @@
                     </div>
                     <div class="card-content">
                         <h3 class="country-name">Dubai (UAE)</h3>
-                        <p class="visa-info">30/60 Days â€¢ Express Available</p>
+                        <p class="visa-info">30/60 Days • Express Available</p>
                         <div class="processing-time"><i class="fas fa-clock"></i> 2 Days Processing</div>
                     </div>
                 </a>
