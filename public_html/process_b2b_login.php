@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Login successful
             $_SESSION['b2b_agent_id'] = $agent['id'];
             $_SESSION['b2b_company_name'] = $agent['company_name'];
-            
+
             // Redirect to dashboard
             header("Location: /agent_dashboard.php");
             exit;

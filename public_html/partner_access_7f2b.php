@@ -7,6 +7,7 @@ if (isset($_SESSION['b2b_agent_id'])) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,6 +20,7 @@ if (isset($_SESSION['b2b_agent_id'])) {
             padding: 0;
             font-family: 'Inter', sans-serif;
         }
+
         body {
             background-color: #050505;
             background-image: radial-gradient(circle at top right, #1a1a2e 0%, #050505 50%);
@@ -28,6 +30,7 @@ if (isset($_SESSION['b2b_agent_id'])) {
             min-height: 100vh;
             color: #fff;
         }
+
         .login-container {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(10px);
@@ -35,14 +38,16 @@ if (isset($_SESSION['b2b_agent_id'])) {
             border: 1px solid rgba(255, 255, 255, 0.05);
             padding: 40px 50px;
             border-radius: 16px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
             width: 100%;
             max-width: 420px;
         }
+
         .logo-container {
             text-align: center;
             margin-bottom: 30px;
         }
+
         .logo-container h1 {
             font-size: 28px;
             font-weight: 700;
@@ -51,6 +56,7 @@ if (isset($_SESSION['b2b_agent_id'])) {
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+
         .logo-container p {
             color: #888;
             font-size: 14px;
@@ -58,9 +64,11 @@ if (isset($_SESSION['b2b_agent_id'])) {
             text-transform: uppercase;
             letter-spacing: 1px;
         }
+
         .form-group {
             margin-bottom: 20px;
         }
+
         .form-group label {
             display: block;
             margin-bottom: 8px;
@@ -70,6 +78,7 @@ if (isset($_SESSION['b2b_agent_id'])) {
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
+
         .form-group input {
             width: 100%;
             padding: 14px 16px;
@@ -80,15 +89,18 @@ if (isset($_SESSION['b2b_agent_id'])) {
             font-size: 15px;
             transition: all 0.3s ease;
         }
+
         .form-group input:focus {
             outline: none;
             border-color: #4a90e2;
             background: rgba(0, 0, 0, 0.4);
             box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
         }
+
         .form-group input::placeholder {
             color: #555;
         }
+
         .btn-login {
             width: 100%;
             padding: 14px;
@@ -103,13 +115,16 @@ if (isset($_SESSION['b2b_agent_id'])) {
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             margin-top: 10px;
         }
+
         .btn-login:hover {
             transform: translateY(-1px);
             box-shadow: 0 6px 15px rgba(74, 144, 226, 0.3);
         }
+
         .btn-login:active {
             transform: translateY(1px);
         }
+
         .error-message {
             color: #ff6b6b;
             background: rgba(255, 107, 107, 0.1);
@@ -119,40 +134,47 @@ if (isset($_SESSION['b2b_agent_id'])) {
             margin-bottom: 20px;
             font-size: 14px;
             text-align: center;
-            display: <?php echo isset($_GET['error']) ? 'block' : 'none'; ?>;
+            display:
+                <?php echo isset($_GET['error']) ? 'block' : 'none'; ?>
+            ;
         }
     </style>
 </head>
+
 <body>
 
-<div class="login-container">
-    <div class="logo-container">
-        <h1>ASKVISA</h1>
-        <p>B2B Partner Portal</p>
-    </div>
-    
-    <div class="error-message">
-        <?php 
-        if (isset($_GET['error'])) {
-            if ($_GET['error'] == 'invalid') echo "Invalid email or password.";
-            else if ($_GET['error'] == 'inactive') echo "Your account is inactive. Please contact support.";
-            else echo "An error occurred. Please try again.";
-        }
-        ?>
-    </div>
-    
-    <form action="/process_b2b_login.php" method="POST">
-        <div class="form-group">
-            <label for="email">Email Address</label>
-            <input type="email" id="email" name="email" required placeholder="name@company.com">
+    <div class="login-container">
+        <div class="logo-container">
+            <h1>ASKVISA</h1>
+            <p>B2B Partner Portal</p>
         </div>
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" required placeholder="••••••••">
+
+        <div class="error-message">
+            <?php
+            if (isset($_GET['error'])) {
+                if ($_GET['error'] == 'invalid')
+                    echo "Invalid email or password.";
+                else if ($_GET['error'] == 'inactive')
+                    echo "Your account is inactive. Please contact support.";
+                else
+                    echo "An error occurred. Please try again.";
+            }
+            ?>
         </div>
-        <button type="submit" class="btn-login">Sign In</button>
-    </form>
-</div>
+
+        <form action="/process_b2b_login.php" method="POST">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required placeholder="name@company.com">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn-login">Sign In</button>
+        </form>
+    </div>
 
 </body>
+
 </html>

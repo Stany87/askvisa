@@ -17,28 +17,12 @@ $is_first_success_view = isset($_SESSION['payment_success_order_id']) && !isset(
 $is_return_from_payment = isset($_GET['return_from_payment']) || isset($_SESSION['payment_failed_temp_order_id']) || isset($_SESSION['payment_failed_order_id']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && !$is_ajax_or_download && !$is_first_success_view && !$is_return_from_payment) {
-    // Preserve B2B agent session keys across application resets
-    $saved_agent_id = $_SESSION['agent_id'] ?? null;
-    $saved_b2b_agent_id = $_SESSION['b2b_agent_id'] ?? null;
-
     session_unset();
     session_destroy();
     session_start();
 
-    // Restore B2B agent keys
-    if ($saved_agent_id) $_SESSION['agent_id'] = $saved_agent_id;
-    if ($saved_b2b_agent_id) $_SESSION['b2b_agent_id'] = $saved_b2b_agent_id;
-
     // Generate fresh CSRF token after destroy
     $csrf_token = generate_csrf_token();
-}
-
-// Capture B2B agent_id from URL (when launched from CRM "New Application")
-if (isset($_GET['agent_id']) && is_numeric($_GET['agent_id'])) {
-    $_SESSION['b2b_agent_id'] = (int) $_GET['agent_id'];
-    if (empty($_SESSION['agent_id'])) {
-        $_SESSION['agent_id'] = (int) $_GET['agent_id'];
-    }
 }
 
 // Handle create order request
@@ -91,7 +75,8 @@ if (isset($_POST['create_order'])) {
             'redirect_url' => 'payment_page.php?temp_order_id=' . $temp_order_id
         ]);
 
-    } catch (Exception $e) {
+    }
+    catch (Exception $e) {
         echo json_encode(['success' => false, 'message' => 'Error preparing payment: ' . $e->getMessage()]);
     }
     exit;
@@ -104,9 +89,11 @@ if (isset($_GET['check_payment_status'])) {
     // Check session for payment status
     if (isset($_SESSION['payment_success_order_id'])) {
         $response = ['success' => true, 'payment_status' => 'paid', 'order_id' => $_SESSION['payment_success_order_id']];
-    } else if (isset($_SESSION['payment_failed_order_id'])) {
+    }
+    else if (isset($_SESSION['payment_failed_order_id'])) {
         $response = ['success' => true, 'payment_status' => 'failed', 'order_id' => $_SESSION['payment_failed_order_id']];
-    } else if (isset($_SESSION['current_temp_order_id'])) {
+    }
+    else if (isset($_SESSION['current_temp_order_id'])) {
         $response = ['success' => true, 'payment_status' => 'pending_payment', 'temp_order_id' => $_SESSION['current_temp_order_id']];
     }
 
@@ -257,15 +244,18 @@ if (isset($_GET['get_summary'])) {
                     'payment_info' => $data['payment_info'] ?? null,
                     'question_labels' => $data['question_labels'] ?? []
                 ]);
-            } else {
+            }
+            else {
                 // If order not found in database, fall back to session data
                 fallbackToSessionData();
             }
 
-        } catch (Exception $e) {
+        }
+        catch (Exception $e) {
             echo json_encode(['success' => false, 'message' => 'Error fetching summary: ' . $e->getMessage()]);
         }
-    } else {
+    }
+    else {
         // If no order ID in session or database, check session data
         fallbackToSessionData();
     }
@@ -310,7 +300,8 @@ function fallbackToSessionData()
             ],
             'question_labels' => $question_labels
         ]);
-    } else {
+    }
+    else {
         echo json_encode(['success' => false, 'message' => 'No data available']);
     }
 }
@@ -332,7 +323,7 @@ if (isset($_GET['country']) && !empty($_GET['country'])) {
                 isset($_SESSION['country_name']) &&
                 strcasecmp($_SESSION['country_name'], $country['country_name']) === 0 &&
                 !isset($_SESSION['payment_success_order_id'])
-            );
+                );
 
             if (!$is_resuming) {
                 // Reset/Overwrite Session for new Country Selection
@@ -364,7 +355,8 @@ if (isset($_GET['country']) && !empty($_GET['country'])) {
                 if (empty($visa_types)) {
                     $messages[] = ['role' => 'bot', 'text' => "Great choice! However, I don't have any visa types configured for **" . $country['country_name'] . "** yet."];
                     $_SESSION['step'] = 'country'; // Fallback
-                } else {
+                }
+                else {
                     // Format for Frontend Dropdown (handled by JS)
                     $_SESSION['current_select_options'] = [];
                     foreach ($visa_types as $vt) {
@@ -383,7 +375,8 @@ if (isset($_GET['country']) && !empty($_GET['country'])) {
 
                 $_SESSION['messages'] = $messages;
             }
-        } else {
+        }
+        else {
             // Country NOT found in DB
             // Reset/Overwrite Session to start fresh
             $_SESSION['messages'] = [];
@@ -399,7 +392,8 @@ if (isset($_GET['country']) && !empty($_GET['country'])) {
             $_SESSION['messages'][] = ['role' => 'user', 'text' => "I want to apply for a visa to " . htmlspecialchars($country_name)];
             $_SESSION['messages'][] = ['role' => 'bot', 'text' => "I noticed you are interested in **" . htmlspecialchars($country_name) . "**.\n\nCurrently, we are not processing visas for **" . htmlspecialchars($country_name) . "** online. Please select another country from the list below or contact us for more information."];
         }
-    } catch (Exception $e) {
+    }
+    catch (Exception $e) {
         // Handle potential DB schema issues on live server
         error_log("Country Search Error: " . $e->getMessage());
         // Fallback: stay on country selection
@@ -557,11 +551,14 @@ function applyValidationRules($value, $validation_rules, $question_label = '', $
         if (!preg_match('/' . $regex_pattern . '/', $value)) {
             if ($field_key === 'passport_number') {
                 $errors[] = "Passport number must contain only uppercase letters and numbers (no spaces or special characters).";
-            } elseif (in_array($field_key, ['first_name', 'last_name'])) {
+            }
+            elseif (in_array($field_key, ['first_name', 'last_name'])) {
                 $errors[] = "Name can only contain letters, spaces, apostrophes and hyphens.";
-            } elseif ($field_key === 'arrival_flight') {
+            }
+            elseif ($field_key === 'arrival_flight') {
                 $errors[] = "Flight number must contain only letters and numbers.";
-            } else {
+            }
+            else {
                 $errors[] = "Invalid format.";
             }
         }
@@ -596,17 +593,20 @@ function validateDateWithRules($date, $rules, $context_data = [], $field_key = '
         $min_date_str = $rules['min_date'];
         if ($min_date_str === 'TODAY') {
             $min_date = clone $today;
-        } elseif (preg_match('/^\d{4}\/\d{2}\/\d{2}$/', $min_date_str)) {
+        }
+        elseif (preg_match('/^\d{4}\/\d{2}\/\d{2}$/', $min_date_str)) {
             $min_date = DateTime::createFromFormat('Y/m/d', $min_date_str);
             $min_date->setTime(0, 0, 0);
-        } else {
+        }
+        else {
             return null;
         }
 
         if ($date_obj < $min_date) {
             if ($rules['min_date'] === 'TODAY') {
                 return "Date cannot be in the past.";
-            } else {
+            }
+            else {
                 return sprintf("Date must be on or after %s.", $min_date_str);
             }
         }
@@ -616,24 +616,27 @@ function validateDateWithRules($date, $rules, $context_data = [], $field_key = '
         $max_date_str = $rules['max_date'];
         if ($max_date_str === 'TODAY') {
             $max_date = clone $today;
-        } elseif (preg_match('/^\d{4}\/\d{2}\/\d{2}$/', $max_date_str)) {
+        }
+        elseif (preg_match('/^\d{4}\/\d{2}\/\d{2}$/', $max_date_str)) {
             $max_date = DateTime::createFromFormat('Y/m/d', $max_date_str);
             $max_date->setTime(0, 0, 0);
-        } else {
+        }
+        else {
             return null;
         }
 
         if ($date_obj > $max_date) {
             if ($rules['max_date'] === 'TODAY') {
                 return "Date cannot be in the future.";
-            } else {
+            }
+            else {
                 return sprintf("Date must be on or before %s.", $max_date_str);
             }
         }
     }
 
     if (isset($rules['min_validity_days'])) {
-        $days_required = (int) $rules['min_validity_days'];
+        $days_required = (int)$rules['min_validity_days'];
         $future_date = clone $today;
         $future_date->modify("+$days_required days");
 
@@ -656,8 +659,8 @@ function validateDateWithRules($date, $rules, $context_data = [], $field_key = '
     if ($field_key === 'passport_issue_date') {
         foreach ($context_data as $key => $val) {
             if (
-                (strpos(strtolower($key), 'expiry') !== false || strpos(strtolower($key), 'expiration') !== false) &&
-                preg_match('/^\d{4}\/\d{2}\/\d{2}$/', $val)
+            (strpos(strtolower($key), 'expiry') !== false || strpos(strtolower($key), 'expiration') !== false) &&
+            preg_match('/^\d{4}\/\d{2}\/\d{2}$/', $val)
             ) {
                 $expiry_date = DateTime::createFromFormat('Y/m/d', $val);
                 if ($expiry_date && $date_obj >= $expiry_date) {
@@ -736,7 +739,7 @@ function validateFileUpload($file, $validation_rules, $field_key = '')
     }
 
     if (isset($rules['max_size'])) {
-        $max_size = (int) $rules['max_size'];
+        $max_size = (int)$rules['max_size'];
         if ($file['size'] > $max_size) {
             $mb_size = round($max_size / 1024 / 1024, 1);
             $errors[] = sprintf("File too large. Maximum size: %dMB.", $mb_size);
@@ -817,15 +820,18 @@ function validatePhoneNumber($phone, $country_name)
         if (!preg_match('/^[6-9][0-9]{9}$/', $cleaned_phone)) {
             return "Indian phone number must be 10 digits starting with 6, 7, 8, or 9.";
         }
-    } elseif (strpos($country_lower, 'usa') !== false || strpos($country_lower, 'united states') !== false) {
+    }
+    elseif (strpos($country_lower, 'usa') !== false || strpos($country_lower, 'united states') !== false) {
         if (!preg_match('/^[0-9]{10}$/', $cleaned_phone)) {
             return "US phone number must be 10 digits.";
         }
-    } elseif (strpos($country_lower, 'uk') !== false || strpos($country_lower, 'united kingdom') !== false) {
+    }
+    elseif (strpos($country_lower, 'uk') !== false || strpos($country_lower, 'united kingdom') !== false) {
         if (!preg_match('/^(07[0-9]{9}|447[0-9]{9})$/', $cleaned_phone)) {
             return "UK phone number must start with 07 or +447 and be 10-11 digits.";
         }
-    } else {
+    }
+    else {
         if (!preg_match('/^\+?[0-9]{8,15}$/', $cleaned_phone)) {
             return "Phone number must be 8-15 digits, may start with +.";
         }
@@ -974,7 +980,8 @@ if (isset($_GET['ajax'])) {
                 $relative_file_path = $sub_path . '/' . $filename;
                 $img_path = '/fetch_file.php?path=' . urlencode($relative_file_path);
             }
-        } else {
+        }
+        else {
             $response = implode("\n", $upload_errors);
         }
     }
@@ -990,10 +997,12 @@ if (isset($_GET['ajax'])) {
                 'img' => $img_path,
                 'is_pdf' => $is_pdf
             ];
-        } else if ($msg !== '') {
+        }
+        else if ($msg !== '') {
             if ($is_select_selection) {
                 $_SESSION['messages'][] = ['role' => 'user', 'text' => "Selected: " . ucfirst($msg)];
-            } else {
+            }
+            else {
                 $_SESSION['messages'][] = ['role' => 'user', 'text' => $msg];
             }
         }
@@ -1038,7 +1047,8 @@ if (isset($_GET['ajax'])) {
                         // Trigger dropdown UI
                         $show_select_dropdown = true;
                         $response = "json_select:visa_type:" . $msg_text;
-                    } else {
+                    }
+                    else {
                         // No visa types found, proceed to details
                         $_SESSION['step'] = 'details';
                         $_SESSION['q_idx'] = 0;
@@ -1060,14 +1070,16 @@ if (isset($_GET['ajax'])) {
                             $_SESSION['messages'][] = ['role' => 'bot', 'text' => $msg_text];
                             $response = $msg_text;
                             $_SESSION['step'] = 'country';
-                        } else {
+                        }
+                        else {
                             $first_q = $_SESSION['db_questions'][0];
                             $msg_text = "Great! You chose **" . $country['country_name'] . "**.\n\n" . formatBold($first_q['label']);
                             $_SESSION['messages'][] = ['role' => 'bot', 'text' => $msg_text];
                             $response = $msg_text;
                         }
                     }
-                } else {
+                }
+                else {
                     $msg_text = "Sorry, we don't support that country yet.";
                     $_SESSION['messages'][] = ['role' => 'bot', 'text' => $msg_text];
                     $response = $msg_text;
@@ -1089,7 +1101,7 @@ if (isset($_GET['ajax'])) {
 
                 // Method 1: ID from Dropdown (json_select) or message fallback
                 foreach ($visa_types as $vt) {
-                    if ((!empty($visa_type_id) && $vt['id'] == $visa_type_id) || (string) $vt['id'] === trim($msg)) {
+                    if ((!empty($visa_type_id) && $vt['id'] == $visa_type_id) || (string)$vt['id'] === trim($msg)) {
                         $found_visa = $vt;
                         break;
                     }
@@ -1107,7 +1119,8 @@ if (isset($_GET['ajax'])) {
                     // Extract name before separator (dash or bracket) if price is included
                     if (strpos($selection, ' - ') !== false) {
                         $selection = substr($selection, 0, strpos($selection, ' - '));
-                    } elseif (strpos($selection, ' (') !== false) {
+                    }
+                    elseif (strpos($selection, ' (') !== false) {
                         $selection = substr($selection, 0, strpos($selection, ' ('));
                     }
 
@@ -1116,7 +1129,8 @@ if (isset($_GET['ajax'])) {
                     // Check if numeric index (1-based from list)
                     if (is_numeric($selection) && intval($selection) > 0 && intval($selection) <= count($visa_types)) {
                         $found_visa = $visa_types[intval($selection) - 1];
-                    } else {
+                    }
+                    else {
                         // Check if name selection (case insensitive)
                         foreach ($visa_types as $vt) {
                             if (strcasecmp(trim($vt['name']), $selection) === 0 || stripos($vt['name'], $selection) !== false) {
@@ -1165,14 +1179,15 @@ if (isset($_GET['ajax'])) {
                         unset($_SESSION['selected_visa']);
                     }
 
-                } else {
+                }
+                else {
                     $response = "Please select a valid visa type from the options below.";
                 }
                 break;
 
             case 'how_many':
-                if (is_numeric($msg) && (int) $msg > 0 && (int) $msg <= 20) {
-                    $_SESSION['total_people'] = (int) $msg;
+                if (is_numeric($msg) && (int)$msg > 0 && (int)$msg <= 20) {
+                    $_SESSION['total_people'] = (int)$msg;
                     $_SESSION['current_person_num'] = 1;
                     $_SESSION['q_idx'] = 0;
                     $_SESSION['step'] = 'details';
@@ -1185,10 +1200,12 @@ if (isset($_GET['ajax'])) {
                     if ($first_field_type === 'select' && isset($_SESSION['question_data'][$first_q_id]['options'])) {
                         $options = $_SESSION['question_data'][$first_q_id]['options'];
                         $response = "json_select:" . $first_q_id . ":Applicant #1: **" . trim($first_q_label) . "**?";
-                    } else {
+                    }
+                    else {
                         $response = "Applicant #1. **" . trim($first_q_label) . "**?";
                     }
-                } else {
+                }
+                else {
                     $response = "Please enter a valid number between 1 and 20.";
                 }
                 break;
@@ -1201,7 +1218,7 @@ if (isset($_GET['ajax'])) {
                 $current_field_type = $current_q['field_type'];
                 $validation_rules = $current_q['validation_rules'] ?? '';
                 $field_key = $current_q['field_key'] ?? '';
-                $is_required = (int) ($current_q['is_required'] ?? 1);
+                $is_required = (int)($current_q['is_required'] ?? 1);
 
                 $is_skip = (strtolower(trim($msg)) === 'skip');
 
@@ -1217,16 +1234,20 @@ if (isset($_GET['ajax'])) {
 
                         if ($next_field_type === 'select') {
                             $response = "json_select:" . $next_q_id . ":Applicant #$p_num: **" . trim($next_q_label) . "**?";
-                        } else {
+                        }
+                        else {
                             $response = "Next for Applicant #$p_num: **" . trim($next_q_label) . "**?";
                         }
-                    } else {
+                    }
+                    else {
                         $_SESSION['step'] = 'applicant_email';
                         $response = "Done with documents for Applicant #$p_num. What is **their email address**?";
                     }
-                } elseif ($current_field_type === 'file' && !$img_path) {
+                }
+                elseif ($current_field_type === 'file' && !$img_path) {
                     $response = "I need a file for: **" . trim($current_q_label) . "**. Please use the 📎 icon.";
-                } else {
+                }
+                else {
                     $validation_errors = [];
 
                     if ($img_path === '') {
@@ -1262,7 +1283,8 @@ if (isset($_GET['ajax'])) {
 
                     if (!empty($validation_errors)) {
                         $response = implode("\n", $validation_errors);
-                    } else {
+                    }
+                    else {
                         $_SESSION['collected_info']["applicant_$p_num"]['answers'][$current_q_id] = $img_path ?: $msg;
                         $_SESSION['q_idx']++;
 
@@ -1274,10 +1296,12 @@ if (isset($_GET['ajax'])) {
 
                             if ($next_field_type === 'select') {
                                 $response = "json_select:" . $next_q_id . ":Applicant #$p_num: **" . trim($next_q_label) . "**?";
-                            } else {
+                            }
+                            else {
                                 $response = "Next for Applicant #$p_num: **" . trim($next_q_label) . "**?";
                             }
-                        } else {
+                        }
+                        else {
                             $_SESSION['step'] = 'applicant_email';
                             $response = "Done with documents for Applicant #$p_num. What is **their email address**?";
                         }
@@ -1288,7 +1312,8 @@ if (isset($_GET['ajax'])) {
             case 'applicant_email':
                 if (!filter_var($msg, FILTER_VALIDATE_EMAIL)) {
                     $response = "Please enter a valid email address for Applicant #$p_num.";
-                } else {
+                }
+                else {
                     $_SESSION['collected_info']["applicant_$p_num"]['email'] = $msg;
                     $_SESSION['step'] = 'applicant_phone';
                     $response = "What is the **phone number** for Applicant #$p_num?";
@@ -1298,13 +1323,15 @@ if (isset($_GET['ajax'])) {
             case 'applicant_phone':
                 if (isset($_SESSION['country_name'])) {
                     $validation_error = validatePhoneNumber($msg, $_SESSION['country_name']);
-                } else {
+                }
+                else {
                     $validation_error = "Please enter a valid phone number for Applicant #$p_num.";
                 }
 
                 if ($validation_error) {
                     $response = $validation_error;
-                } else {
+                }
+                else {
                     $_SESSION['collected_info']["applicant_$p_num"]['phone'] = $msg;
                     if ($_SESSION['current_person_num'] < $_SESSION['total_people']) {
                         $_SESSION['current_person_num']++;
@@ -1319,10 +1346,12 @@ if (isset($_GET['ajax'])) {
 
                         if ($first_field_type === 'select') {
                             $response = "json_select:" . $first_q_id . ":Next: Applicant #$p. **" . trim($first_q_label) . "**?";
-                        } else {
+                        }
+                        else {
                             $response = "Next: Applicant #$p. **" . trim($first_q_label) . "**?";
                         }
-                    } else {
+                    }
+                    else {
                         $_SESSION['step'] = 'order_email';
                         $response = "All applicant details captured. Now, please provide the **Primary Contact Email** for this order.";
                     }
@@ -1332,7 +1361,8 @@ if (isset($_GET['ajax'])) {
             case 'order_email':
                 if (!filter_var($msg, FILTER_VALIDATE_EMAIL)) {
                     $response = "Please enter a valid email address for the primary contact.";
-                } else {
+                }
+                else {
                     $_SESSION['order_contact_email'] = $msg;
                     $_SESSION['step'] = 'order_phone';
                     $response = "Now, what is the **Primary Contact Phone Number** for the order?";
@@ -1342,13 +1372,15 @@ if (isset($_GET['ajax'])) {
             case 'order_phone':
                 if (isset($_SESSION['country_name'])) {
                     $validation_error = validatePhoneNumber($msg, $_SESSION['country_name']);
-                } else {
+                }
+                else {
                     $validation_error = "Please enter a valid phone number for the primary contact.";
                 }
 
                 if ($validation_error) {
                     $response = $validation_error;
-                } else {
+                }
+                else {
                     $_SESSION['order_contact_phone'] = $msg;
 
                     $payment_info = calculatePaymentAmount(
@@ -1371,13 +1403,16 @@ if (isset($_GET['ajax'])) {
                         $sent = sendOrderConfirmationEmail($order_id, $msg);
                         if ($sent) {
                             $response = "Invoice sent successfully to **$msg**! ✅";
-                        } else {
+                        }
+                        else {
                             $response = "Sorry, I couldn't send the email right now. Please check your SMTP settings in `config.php`.";
                         }
-                    } else {
+                    }
+                    else {
                         $response = "I couldn't find a completed order to send an invoice for.";
                     }
-                } else {
+                }
+                else {
                     $response = "If you'd like me to send the invoice to another email address, please enter a valid email. Otherwise, you can download it using the link above.";
                 }
                 break;
@@ -1464,7 +1499,7 @@ if (isset($_GET['ajax'])) {
                 $step_label = "Document " . ($_SESSION['q_idx'] + 1) . " of " . $total_questions;
 
                 $validation_rules = $current_q['validation_rules'] ?? '';
-                if (isDateQuestion($validation_rules) || (isset($current_q['field_type']) && $current_q['field_type'] === 'date')) {
+                if (isDateQuestion($validation_rules)) {
                     $show_date_calendar = true;
                 }
 
@@ -1472,45 +1507,6 @@ if (isset($_GET['ajax'])) {
                     $show_select_dropdown = true;
                     if (isset($_SESSION['question_data'][$current_q['id']]['options'])) {
                         $select_options = $_SESSION['question_data'][$current_q['id']]['options'];
-
-                        // Custom Sorting for "Province" (hotel_province) in Thailand
-                        $field_key = $current_q['field_key'] ?? '';
-                        $country_name = $_SESSION['country_name'] ?? '';
-                        if (($field_key === 'hotel_province' || $field_key === 'province' || stripos($current_q['label'], 'Province') !== false) && stripos($country_name, 'Thailand') !== false) {
-                            $popular = [
-                                'BANGKOK',
-                                'PHUKET',
-                                'CHON BURI',
-                                'SURAT THANI',
-                                'KRABI',
-                                'CHIANG MAI',
-                                'PHANG NGA',
-                                'SONGKHLA',
-                                'CHONBURI',
-                                'PATTAYA',
-                                'SAMUI'
-                            ];
-
-                            $popular_indices = array_flip($popular);
-
-                            usort($select_options, function ($a, $b) use ($popular_indices) {
-                                $labelA = strtoupper(trim($a['option_label'] ?? ''));
-                                $labelB = strtoupper(trim($b['option_label'] ?? ''));
-
-                                $isPopA = isset($popular_indices[$labelA]);
-                                $isPopB = isset($popular_indices[$labelB]);
-
-                                if ($isPopA && $isPopB) {
-                                    return $popular_indices[$labelA] - $popular_indices[$labelB];
-                                }
-                                if ($isPopA)
-                                    return -1;
-                                if ($isPopB)
-                                    return 1;
-
-                                return strcmp($labelA, $labelB);
-                            });
-                        }
                     }
                 }
             }
@@ -1635,25 +1631,17 @@ if (isset($_POST['reset'])) {
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <meta name="csrf-token" content="<?php echo $csrf_token; ?>">
     <title>Ask Visa – Application Portal</title>
     <link rel="icon" href="assets/ask-visa-logo-final red.png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
             --primary: #dc2626;
@@ -1691,26 +1679,12 @@ if (isset($_POST['reset'])) {
             --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.3);
         }
 
-        html.dark body {
-            background: #0f172a;
-        }
-
+        html.dark body { background: #0f172a; }
         html.dark .confirm-card,
-        html.dark .calendar {
-            background: #1e293b;
-        }
-
-        html.dark .summary-container {
-            background: #1e293b;
-        }
-
-        html.dark .input-field {
-            color: var(--text-main);
-        }
-
-        html.dark .chat-container::-webkit-scrollbar-thumb {
-            background: rgba(71, 85, 105, 0.6);
-        }
+        html.dark .calendar { background: #1e293b; }
+        html.dark .summary-container { background: #1e293b; }
+        html.dark .input-field { color: var(--text-main); }
+        html.dark .chat-container::-webkit-scrollbar-thumb { background: rgba(71, 85, 105, 0.6); }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -1724,10 +1698,7 @@ if (isset($_POST['reset'])) {
         }
 
         /* Layout */
-        .app-container {
-            display: flex;
-            height: 100vh;
-        }
+        .app-container { display: flex; height: 100vh; }
 
         /* ─── Sidebar ─── */
         .sidebar {
@@ -1750,155 +1721,76 @@ if (isset($_POST['reset'])) {
             gap: 12px;
         }
 
-        .sidebar-header img {
-            height: 36px;
-            width: auto;
-        }
+        .sidebar-header img { height: 36px; width: auto; }
 
         .sidebar-header .status {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
+            display: flex; align-items: center; gap: 6px;
+            font-size: 0.7rem; font-weight: 700;
+            color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em;
         }
 
         .status-dot {
-            width: 7px;
-            height: 7px;
-            background: #22c55e;
-            border-radius: 50%;
+            width: 7px; height: 7px;
+            background: #22c55e; border-radius: 50%;
             box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
             animation: pulse 2s infinite;
         }
 
-        @keyframes pulse {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.5;
-            }
-        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
         /* Progress */
-        .progress-section {
-            padding: 20px 24px;
-            border-bottom: 1px solid var(--border);
-        }
+        .progress-section { padding: 20px 24px; border-bottom: 1px solid var(--border); }
 
-        .progress-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-bottom: 10px;
-        }
+        .progress-meta { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px; }
 
         .progress-step-text {
-            font-size: 0.65rem;
-            font-weight: 700;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
+            font-size: 0.65rem; font-weight: 700;
+            color: var(--primary); text-transform: uppercase; letter-spacing: 0.08em;
         }
 
-        .progress-label {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--text-main);
-            margin-top: 2px;
-        }
+        .progress-label { font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-top: 2px; }
 
-        .progress-percent {
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: var(--text-muted);
-        }
+        .progress-percent { font-size: 0.7rem; font-weight: 600; color: var(--text-muted); }
 
         .progress-track {
-            width: 100%;
-            height: 6px;
+            width: 100%; height: 6px;
             background: rgba(226, 232, 240, 0.6);
-            border-radius: var(--radius-full);
-            overflow: hidden;
+            border-radius: var(--radius-full); overflow: hidden;
         }
 
         .progress-bar {
-            height: 100%;
-            border-radius: var(--radius-full);
+            height: 100%; border-radius: var(--radius-full);
             background: var(--primary);
             transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .applicant-count {
-            text-align: center;
-            margin-top: 10px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: var(--text-muted);
+            text-align: center; margin-top: 10px;
+            font-size: 0.7rem; font-weight: 600; color: var(--text-muted);
         }
 
         /* Sidebar Actions */
-        .sidebar-actions {
-            margin-top: auto;
-            padding: 16px 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
+        .sidebar-actions { margin-top: auto; padding: 16px 24px; display: flex; flex-direction: column; gap: 14px; }
 
         .sidebar-btn {
-            width: 100%;
-            padding: 12px 16px;
-            background: var(--bg-light);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            color: var(--text-main);
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            width: 100%; padding: 12px 16px;
+            background: var(--bg-light); border: 1px solid var(--border);
+            border-radius: var(--radius-md); color: var(--text-main);
+            font-size: 0.85rem; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; gap: 10px;
             transition: var(--transition);
         }
 
-        .sidebar-btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .sidebar-btn i {
-            color: var(--primary);
-            width: 18px;
-            text-align: center;
-        }
+        .sidebar-btn:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+        .sidebar-btn i { color: var(--primary); width: 18px; text-align: center; }
 
         .sidebar-footer {
-            padding: 16px 24px;
-            border-top: 1px solid var(--border);
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            text-align: center;
-            font-weight: 500;
+            padding: 16px 24px; border-top: 1px solid var(--border);
+            font-size: 0.7rem; color: var(--text-muted); text-align: center; font-weight: 500;
         }
 
         /* ─── Chat Section ─── */
-        .chat-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
-        }
+        .chat-section { flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; }
 
         /* Chat Header */
         .chat-header {
@@ -1906,1688 +1798,798 @@ if (isset($_POST['reset'])) {
             background: var(--surface);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            display: flex; align-items: center; justify-content: space-between;
             z-index: 5;
         }
 
-        .chat-header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .chat-header-left { display: flex; align-items: center; gap: 12px; }
 
         .chat-avatar-header {
-            width: 40px;
-            height: 40px;
-            background: var(--primary-light);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary);
-            font-size: 1.1rem;
+            width: 40px; height: 40px;
+            background: var(--primary-light); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--primary); font-size: 1.1rem;
         }
 
-        .chat-header h2 {
-            font-size: 1rem;
-            font-weight: 800;
-            color: var(--text-main);
-        }
+        .chat-header h2 { font-size: 1rem; font-weight: 800; color: var(--text-main); }
+        .chat-header p { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
 
-        .chat-header p {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .chat-header-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 0.8rem;
-            color: #22c55e;
-            font-weight: 600;
-        }
+        .chat-header-right { display: flex; align-items: center; gap: 12px; font-size: 0.8rem; color: #22c55e; font-weight: 600; }
 
         /* Dark Mode Toggle */
         .theme-toggle {
-            width: 44px;
-            height: 24px;
-            border-radius: var(--radius-full);
-            background: var(--border);
-            border: none;
-            cursor: pointer;
-            position: relative;
-            transition: var(--transition);
-            padding: 0;
+            width: 44px; height: 24px; border-radius: var(--radius-full);
+            background: var(--border); border: none; cursor: pointer;
+            position: relative; transition: var(--transition); padding: 0;
             flex-shrink: 0;
         }
-
         .theme-toggle::after {
-            content: '';
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: white;
-            transition: var(--transition);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+            content: ''; position: absolute; top: 3px; left: 3px;
+            width: 18px; height: 18px; border-radius: 50%;
+            background: white; transition: var(--transition);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
         }
-
-        html.dark .theme-toggle {
-            background: var(--primary);
-        }
-
-        html.dark .theme-toggle::after {
-            transform: translateX(20px);
-        }
-
+        html.dark .theme-toggle { background: var(--primary); }
+        html.dark .theme-toggle::after { transform: translateX(20px); }
         .theme-toggle-label {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--text-muted);
+            display: flex; align-items: center; gap: 6px;
+            cursor: pointer; font-size: 0.75rem; font-weight: 600; color: var(--text-muted);
         }
-
-        .theme-toggle-label i {
-            font-size: 0.9rem;
-        }
-
-        html.dark .theme-toggle-label .fa-moon {
-            color: var(--primary);
-        }
+        .theme-toggle-label i { font-size: 0.9rem; }
+        html.dark .theme-toggle-label .fa-moon { color: var(--primary); }
 
         /* Mobile Sidebar Toggle */
         .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--text-main);
-            font-size: 1.3rem;
-            padding: 6px;
-            border-radius: var(--radius-sm);
-            transition: var(--transition);
+            display: none; background: none; border: none; cursor: pointer;
+            color: var(--text-main); font-size: 1.3rem; padding: 6px;
+            border-radius: var(--radius-sm); transition: var(--transition);
         }
-
-        .mobile-menu-btn:hover {
-            background: var(--primary-light);
-            color: var(--primary);
-        }
+        .mobile-menu-btn:hover { background: var(--primary-light); color: var(--primary); }
 
         /* Welcome Banner */
         .welcome-banner {
-            padding: 20px 24px 8px;
-            text-align: center;
+            padding: 20px 24px 8px; text-align: center;
             animation: fadeIn 0.6s ease-out;
         }
-
         .welcome-banner .greeting {
-            font-size: 1.15rem;
-            font-weight: 800;
-            color: var(--text-main);
+            font-size: 1.15rem; font-weight: 800; color: var(--text-main);
             margin-bottom: 4px;
         }
-
         .welcome-banner .sub-greeting {
-            font-size: 0.82rem;
-            color: var(--text-muted);
-            font-weight: 500;
+            font-size: 0.82rem; color: var(--text-muted); font-weight: 500;
             margin-bottom: 14px;
         }
-
         .quick-chips {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 8px;
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
             margin-bottom: 6px;
         }
-
         .quick-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 16px;
-            border-radius: var(--radius-full);
-            background: var(--bg-light);
-            border: 1px solid var(--border);
-            font-size: 0.78rem;
-            font-weight: 600;
-            color: var(--text-main);
-            cursor: pointer;
-            transition: var(--transition);
-            white-space: nowrap;
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 16px; border-radius: var(--radius-full);
+            background: var(--bg-light); border: 1px solid var(--border);
+            font-size: 0.78rem; font-weight: 600; color: var(--text-main);
+            cursor: pointer; transition: var(--transition); white-space: nowrap;
         }
-
         .quick-chip:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+            background: var(--primary); color: white;
+            border-color: var(--primary); transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220,38,38,0.2);
         }
-
-        .quick-chip i {
-            font-size: 0.85rem;
-        }
+        .quick-chip i { font-size: 0.85rem; }
 
         /* Chat Container */
         .chat-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 24px;
+            flex: 1; overflow-y: auto; padding: 24px;
             scroll-behavior: smooth;
         }
 
-        .chat-container::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .chat-container::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .chat-container::-webkit-scrollbar-thumb {
-            background: rgba(226, 232, 240, 0.6);
-            border-radius: 3px;
-        }
+        .chat-container::-webkit-scrollbar { width: 6px; }
+        .chat-container::-webkit-scrollbar-track { background: transparent; }
+        .chat-container::-webkit-scrollbar-thumb { background: rgba(226, 232, 240, 0.6); border-radius: 3px; }
 
         /* Messages */
-        .message-row {
-            display: flex;
-            margin-bottom: 20px;
-            animation: fadeIn 0.4s ease-out;
-        }
+        .message-row { display: flex; margin-bottom: 20px; animation: fadeIn 0.4s ease-out; }
+        .message-row.bot { justify-content: flex-start; }
+        .message-row.user { justify-content: flex-end; }
 
-        .message-row.bot {
-            justify-content: flex-start;
-        }
-
-        .message-row.user {
-            justify-content: flex-end;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(8px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
         .message-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.85rem;
-            flex-shrink: 0;
-            margin-top: 4px;
+            width: 36px; height: 36px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.85rem; flex-shrink: 0; margin-top: 4px;
         }
 
         .message-row.bot .message-avatar {
-            background: var(--primary-light);
-            color: var(--primary);
-            margin-right: 10px;
-            border: 1px solid rgba(220, 38, 38, 0.15);
+            background: var(--primary-light); color: var(--primary);
+            margin-right: 10px; border: 1px solid rgba(220, 38, 38, 0.15);
         }
 
         .message-row.user .message-avatar {
-            background: var(--primary);
-            color: white;
-            margin-left: 10px;
-            order: 2;
+            background: var(--primary); color: white;
+            margin-left: 10px; order: 2;
         }
 
-        .message-content {
-            max-width: 75%;
-        }
+        .message-content { max-width: 75%; }
 
         .message-row.bot .message-content .message-text {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 14px 18px;
-            border-radius: 0 var(--radius-lg) var(--radius-lg) var(--radius-lg);
+            background: var(--surface); border: 1px solid var(--border);
+            padding: 14px 18px; border-radius: 0 var(--radius-lg) var(--radius-lg) var(--radius-lg);
             box-shadow: var(--shadow-sm);
         }
 
         .message-row.user .message-content .message-text {
-            background: var(--primary);
-            color: white;
-            padding: 14px 18px;
-            border-radius: var(--radius-lg) 0 var(--radius-lg) var(--radius-lg);
+            background: var(--primary); color: white;
+            padding: 14px 18px; border-radius: var(--radius-lg) 0 var(--radius-lg) var(--radius-lg);
             box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
         }
 
-        .message-text {
-            font-size: 0.9rem;
-            line-height: 1.6;
-            font-weight: 500;
-        }
-
-        .message-text b {
-            font-weight: 800;
-        }
+        .message-text { font-size: 0.9rem; line-height: 1.6; font-weight: 500; }
+        .message-text b { font-weight: 800; }
 
         .message-time {
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            margin-top: 6px;
-            padding: 0 4px;
-            font-weight: 500;
+            font-size: 0.65rem; color: var(--text-muted);
+            margin-top: 6px; padding: 0 4px; font-weight: 500;
         }
 
-        .message-attachment {
-            margin-top: 10px;
-        }
+        .message-attachment { margin-top: 10px; }
 
         .msg-img {
-            max-width: 200px;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            border: 1px solid var(--border);
+            max-width: 200px; border-radius: var(--radius-md);
+            cursor: pointer; border: 1px solid var(--border);
             transition: var(--transition);
         }
-
-        .msg-img:hover {
-            transform: scale(1.03);
-            box-shadow: var(--shadow-md);
-        }
+        .msg-img:hover { transform: scale(1.03); box-shadow: var(--shadow-md); }
 
         .pdf-card {
-            background: var(--bg-alt);
-            border: 1px solid var(--border);
-            padding: 12px 16px;
-            border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            transition: var(--transition);
+            background: var(--bg-alt); border: 1px solid var(--border);
+            padding: 12px 16px; border-radius: var(--radius-md);
+            display: flex; align-items: center; gap: 12px;
+            cursor: pointer; transition: var(--transition);
         }
+        .pdf-card:hover { background: var(--primary-light); border-color: var(--primary); }
 
-        .pdf-card:hover {
-            background: var(--primary-light);
-            border-color: var(--primary);
-        }
+        .pdf-icon { font-size: 1.5rem; color: var(--primary); }
 
-        .pdf-icon {
-            font-size: 1.5rem;
-            color: var(--primary);
-        }
-
-        .pdf-info h4 {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
-        .pdf-info p {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-        }
+        .pdf-info h4 { font-size: 0.85rem; font-weight: 700; color: var(--text-main); }
+        .pdf-info p { font-size: 0.7rem; color: var(--text-muted); }
 
         /* Input Section */
-        .input-section {
-            padding: 16px 24px;
-            background: var(--surface);
-            border-top: 1px solid var(--border);
-        }
+        .input-section { padding: 16px 24px; background: var(--surface); border-top: 1px solid var(--border); }
 
         .input-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            width: 100%;
-            margin: 0 auto;
+            display: flex; align-items: center; gap: 10px;
+            width: 100%; margin: 0 auto;
         }
 
         .input-inner {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            background: var(--bg-light);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-full);
-            padding: 6px 6px 6px 18px;
+            flex: 1; display: flex; align-items: center;
+            background: var(--bg-light); border: 1px solid var(--border);
+            border-radius: var(--radius-full); padding: 6px 6px 6px 18px;
             transition: var(--transition);
         }
 
-        .input-inner:focus-within {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px var(--primary-light);
-        }
+        .input-inner:focus-within { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light); }
 
         .file-upload-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            padding: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-            border-radius: 50%;
+            background: none; border: none; cursor: pointer;
+            color: var(--text-muted); font-size: 1.1rem;
+            padding: 8px; display: flex; align-items: center; justify-content: center;
+            transition: var(--transition); border-radius: 50%;
         }
-
-        .file-upload-btn:hover:not(.disabled) {
-            color: var(--primary);
-            background: var(--primary-light);
-        }
-
-        .file-upload-btn.disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-
-        .file-upload-btn.active {
-            color: var(--primary);
-        }
+        .file-upload-btn:hover:not(.disabled) { color: var(--primary); background: var(--primary-light); }
+        .file-upload-btn.disabled { opacity: 0.4; cursor: not-allowed; }
+        .file-upload-btn.active { color: var(--primary); }
 
         .input-field {
-            flex: 1;
-            border: none;
-            background: transparent;
-            padding: 12px 10px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: var(--text-main);
-            outline: none;
+            flex: 1; border: none; background: transparent;
+            padding: 12px 10px; font-size: 0.9rem; font-weight: 500;
+            color: var(--text-main); outline: none;
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
-
-        .input-field::placeholder {
-            color: var(--text-muted);
-            font-weight: 500;
-        }
+        .input-field::placeholder { color: var(--text-muted); font-weight: 500; }
 
         .send-btn {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--primary);
-            color: white;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1rem;
-            cursor: pointer;
+            width: 50px; height: 50px; border-radius: 50%;
+            background: var(--primary); color: white; border: none;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; cursor: pointer;
             box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
-            transition: var(--transition);
-            flex-shrink: 0;
+            transition: var(--transition); flex-shrink: 0;
         }
-
-        .send-btn:hover:not(:disabled) {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .send-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+        .send-btn:hover:not(:disabled) { background: var(--primary-hover); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* Preview Tray */
         #previewTray {
-            display: none;
-            position: absolute;
-            bottom: 90px;
-            left: 24px;
-            right: 24px;
-            background: var(--surface);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 12px 16px;
-            box-shadow: var(--shadow-lg);
-            align-items: center;
-            gap: 12px;
-            z-index: 40;
+            display: none; position: absolute; bottom: 90px; left: 24px; right: 24px;
+            background: var(--surface); backdrop-filter: blur(12px);
+            border: 1px solid var(--border); border-radius: var(--radius-lg);
+            padding: 12px 16px; box-shadow: var(--shadow-lg);
+            align-items: center; gap: 12px; z-index: 40;
         }
 
-        #previewImg {
-            width: 48px;
-            height: 48px;
-            object-fit: cover;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border);
-        }
+        #previewImg { width: 48px; height: 48px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border); }
 
-        .preview-info {
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .preview-info h4 {
-            font-size: 0.85rem;
-            font-weight: 700;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .preview-info p {
-            font-size: 0.65rem;
-            color: var(--text-muted);
-        }
+        .preview-info { flex: 1; overflow: hidden; }
+        .preview-info h4 { font-size: 0.85rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .preview-info p { font-size: 0.65rem; color: var(--text-muted); }
 
         .preview-close {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: var(--bg-alt);
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: var(--text-muted);
-            transition: var(--transition);
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--bg-alt); border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: var(--text-muted); transition: var(--transition);
         }
-
-        .preview-close:hover {
-            background: var(--primary-light);
-            color: var(--primary);
-        }
+        .preview-close:hover { background: var(--primary-light); color: var(--primary); }
 
         /* Lightbox */
         #lightbox {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.9); z-index: 1000;
+            justify-content: center; align-items: center;
         }
-
-        #lbContainer {
-            max-width: 90%;
-            max-height: 90%;
-        }
-
-        #lbImg {
-            max-width: 100%;
-            max-height: 90vh;
-            border-radius: 12px;
-            display: none;
-        }
-
-        #lbPdf {
-            width: 80vw;
-            height: 90vh;
-            border: none;
-            border-radius: 12px;
-            display: none;
-            background: white;
-        }
-
+        #lbContainer { max-width: 90%; max-height: 90%; }
+        #lbImg { max-width: 100%; max-height: 90vh; border-radius: 12px; display: none; }
+        #lbPdf { width: 80vw; height: 90vh; border: none; border-radius: 12px; display: none; background: white; }
         .lightbox-close {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            position: absolute; top: 20px; right: 30px;
+            color: white; font-size: 1.5rem; cursor: pointer;
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            display: flex; align-items: center; justify-content: center;
             transition: var(--transition);
         }
-
-        .lightbox-close:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
+        .lightbox-close:hover { background: rgba(255,255,255,0.3); }
 
         /* Confirm Overlay */
         .confirm-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.4);
-            backdrop-filter: blur(4px);
-            z-index: 100;
-            justify-content: center;
-            align-items: center;
+            display: none; position: fixed; inset: 0;
+            background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px);
+            z-index: 100; justify-content: center; align-items: center;
         }
 
         .confirm-card {
-            background: white;
-            border: 1px solid var(--border);
-            width: 90%;
-            max-width: 400px;
-            padding: 32px;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-lg);
+            background: white; border: 1px solid var(--border);
+            width: 90%; max-width: 400px; padding: 32px;
+            border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
             text-align: center;
         }
 
         .confirm-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: rgba(220, 38, 38, 0.1);
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            margin: 0 auto 16px;
+            width: 60px; height: 60px; border-radius: 50%;
+            background: rgba(220, 38, 38, 0.1); color: var(--primary);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; margin: 0 auto 16px;
         }
 
-        .confirm-card h3 {
-            font-size: 1.2rem;
-            font-weight: 800;
-            margin-bottom: 8px;
-        }
+        .confirm-card h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; }
+        .confirm-card p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 24px; }
 
-        .confirm-card p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 24px;
-        }
-
-        .confirm-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+        .confirm-actions { display: flex; flex-direction: column; gap: 10px; }
 
         .confirm-btn {
-            width: 100%;
-            padding: 14px;
-            border-radius: var(--radius-full);
-            border: none;
-            font-size: 0.9rem;
-            font-weight: 700;
-            cursor: pointer;
+            width: 100%; padding: 14px; border-radius: var(--radius-full);
+            border: none; font-size: 0.9rem; font-weight: 700; cursor: pointer;
             transition: var(--transition);
         }
-
-        .confirm-btn.danger {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
-        }
-
-        .confirm-btn.danger:hover {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
-        }
-
-        .confirm-btn.cancel {
-            background: var(--bg-alt);
-            color: var(--text-main);
-            border: 1px solid var(--border);
-        }
-
-        .confirm-btn.cancel:hover {
-            background: var(--border);
-        }
+        .confirm-btn.danger { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3); }
+        .confirm-btn.danger:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .confirm-btn.cancel { background: var(--bg-alt); color: var(--text-main); border: 1px solid var(--border); }
+        .confirm-btn.cancel:hover { background: var(--border); }
 
         /* Summary Popup */
         .summary-popup {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.4);
-            z-index: 100;
-            justify-content: center;
-            align-items: center;
+            display: none; position: fixed; inset: 0;
+            background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px);
+            z-index: 100; justify-content: center; align-items: center;
         }
 
         .summary-container {
-            background: white;
-            border: 1px solid var(--border);
-            width: 90%;
-            max-width: 680px;
-            max-height: 85vh;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-lg);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            background: white; border: 1px solid var(--border);
+            width: 90%; max-width: 680px; max-height: 85vh;
+            border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+            display: flex; flex-direction: column; overflow: hidden;
         }
 
         .summary-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 20px 24px; border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
             background: var(--bg-alt);
         }
 
-        .summary-header h3 {
-            font-size: 1.1rem;
-            font-weight: 800;
-        }
+        .summary-header h3 { font-size: 1.1rem; font-weight: 800; }
 
         .summary-close {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: var(--bg-light);
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: var(--transition);
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--bg-light); border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: var(--transition);
         }
+        .summary-close:hover { background: var(--primary-light); color: var(--primary); }
 
-        .summary-close:hover {
-            background: var(--primary-light);
-            color: var(--primary);
-        }
+        .summary-content { padding: 24px; overflow-y: auto; flex: 1; font-size: 0.85rem; }
 
-        .summary-content {
-            padding: 24px;
-            overflow-y: auto;
-            flex: 1;
-            font-size: 0.85rem;
-        }
-
-        .summary-section {
-            margin-bottom: 24px;
-            padding-bottom: 24px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .summary-section:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-        }
+        .summary-section { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+        .summary-section:last-child { border-bottom: none; margin-bottom: 0; }
 
         .summary-section h4 {
-            font-size: 0.9rem;
-            font-weight: 800;
-            margin-bottom: 14px;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            font-size: 0.9rem; font-weight: 800; margin-bottom: 14px;
+            color: var(--text-main); display: flex; align-items: center; gap: 8px;
         }
+        .summary-section h4 i { color: var(--primary); }
 
-        .summary-section h4 i {
-            color: var(--primary);
-        }
+        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-        .summary-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .summary-item {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .summary-label {
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-        }
-
-        .summary-value {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-main);
-            word-break: break-all;
-        }
+        .summary-item { display: flex; flex-direction: column; gap: 2px; }
+        .summary-label { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+        .summary-value { font-size: 0.85rem; font-weight: 600; color: var(--text-main); word-break: break-all; }
 
         .summary-file {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: var(--bg-alt);
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border);
-            margin-bottom: 8px;
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px; background: var(--bg-alt); border-radius: var(--radius-md);
+            border: 1px solid var(--border); margin-bottom: 8px;
         }
+        .summary-file i { font-size: 1.2rem; color: var(--primary); }
 
-        .summary-file i {
-            font-size: 1.2rem;
-            color: var(--primary);
-        }
-
-        .file-info h5 {
-            font-size: 0.8rem;
-            font-weight: 700;
-        }
-
-        .file-info p {
-            font-size: 0.65rem;
-            color: var(--text-muted);
-        }
+        .file-info h5 { font-size: 0.8rem; font-weight: 700; }
+        .file-info p { font-size: 0.65rem; color: var(--text-muted); }
 
         .file-preview img {
-            max-width: 120px;
-            max-height: 100px;
-            object-fit: contain;
-            cursor: pointer;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
+            max-width: 120px; max-height: 100px; object-fit: contain;
+            cursor: pointer; border: 1px solid var(--border); border-radius: var(--radius-sm);
         }
-
-        .file-preview img:hover {
-            box-shadow: var(--shadow-md);
-        }
+        .file-preview img:hover { box-shadow: var(--shadow-md); }
 
         .summary-footer {
-            padding: 16px 24px;
-            border-top: 1px solid var(--border);
-            background: var(--bg-alt);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 16px 24px; border-top: 1px solid var(--border);
+            background: var(--bg-alt); display: flex; justify-content: space-between; align-items: center;
         }
 
-        .summary-actions {
-            display: flex;
-            gap: 10px;
-        }
+        .summary-actions { display: flex; gap: 10px; }
 
         .summary-btn {
-            padding: 10px 20px;
-            border-radius: var(--radius-full);
-            border: none;
-            font-size: 0.85rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: var(--transition);
+            padding: 10px 20px; border-radius: var(--radius-full);
+            border: none; font-size: 0.85rem; font-weight: 700; cursor: pointer;
+            display: flex; align-items: center; gap: 8px; transition: var(--transition);
         }
-
-        .summary-btn.download {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
-        }
-
-        .summary-btn.download:hover {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
-        }
-
-        .summary-btn.download.hidden {
-            display: none;
-        }
-
-        .summary-btn.close-btn {
-            background: var(--bg-light);
-            color: var(--text-main);
-            border: 1px solid var(--border);
-        }
-
-        .summary-btn.close-btn:hover {
-            background: var(--border);
-        }
+        .summary-btn.download { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3); }
+        .summary-btn.download:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .summary-btn.download.hidden { display: none; }
+        .summary-btn.close-btn { background: var(--bg-light); color: var(--text-main); border: 1px solid var(--border); }
+        .summary-btn.close-btn:hover { background: var(--border); }
 
         .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-muted);
+            text-align: center; padding: 40px 20px; color: var(--text-muted);
         }
-
-        .empty-state i {
-            font-size: 2.5rem;
-            margin-bottom: 12px;
-            color: var(--border);
-        }
-
-        .empty-state h3 {
-            font-size: 1rem;
-            font-weight: 800;
-            color: var(--text-main);
-            margin-bottom: 6px;
-        }
-
-        .empty-state p {
-            font-size: 0.85rem;
-        }
+        .empty-state i { font-size: 2.5rem; margin-bottom: 12px; color: var(--border); }
+        .empty-state h3 { font-size: 1rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px; }
+        .empty-state p { font-size: 0.85rem; }
 
         /* Select Dropdown Options */
-        .select-container {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            width: calc(100% - 46px);
-            max-width: 420px;
-            margin-top: 10px;
-            box-sizing: border-box;
-            transition: var(--transition);
-        }
-
-        .select-container.scrollable-options {
-            max-height: 320px;
-            overflow-y: auto;
-            padding-right: 8px;
-            scrollbar-width: thin;
-            scrollbar-color: var(--primary) transparent;
-        }
-
-        .select-container.scrollable-options::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .select-container.scrollable-options::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .select-container.scrollable-options::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 10px;
-        }
-
-        .select-container.scrollable-options::-webkit-scrollbar-thumb:hover {
-            background: var(--primary);
-        }
+        .select-container { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 420px; margin-top: 10px; }
 
         .select-option {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 12px 14px;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            color: var(--text-main);
-            font-weight: 600;
-            font-size: 0.85rem;
+            background: var(--surface); border: 1px solid var(--border);
+            padding: 12px 18px; border-radius: var(--radius-md);
+            cursor: pointer; transition: var(--transition);
+            display: flex; justify-content: space-between; align-items: center;
+            color: var(--text-main); font-weight: 600; font-size: 0.85rem;
         }
-
-        .option-name {
-            flex: 1;
-            line-height: 1.3;
-            word-break: break-word;
-            overflow-wrap: break-word;
-            hyphens: auto;
-        }
-
-        .option-price {
-            white-space: nowrap;
-            font-weight: 800;
-            text-align: right;
-            flex-shrink: 0;
-        }
-
-        .select-option:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .select-option.selected {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .select-option.disabled {
-            opacity: 0.5;
-            pointer-events: none;
-        }
-
-        /* Select Search Bar */
-        .select-search-container {
-            position: sticky;
-            top: 0;
-            z-index: 5;
-            margin-bottom: 10px;
-            width: calc(100% - 46px);
-            max-width: 420px;
-            background: var(--surface);
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border);
-            padding: 2px 2px 2px 14px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: var(--transition);
-        }
-
-        .select-search-container:focus-within {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-light);
-        }
-
-        .select-search-input {
-            flex: 1;
-            border: none;
-            background: transparent;
-            padding: 10px 0;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-main);
-            outline: none;
-            font-family: inherit;
-        }
-
-        .select-search-input::placeholder {
-            color: var(--text-muted);
-        }
-
-        .select-search-icon {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
+        .select-option:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+        .select-option.selected { background: var(--primary); color: white; border-color: var(--primary); }
+        .select-option.disabled { opacity: 0.5; pointer-events: none; }
 
         /* Payment Button */
-        .payment-container {
-            margin-top: 16px;
-            text-align: center;
-        }
+        .payment-container { margin-top: 16px; text-align: center; }
 
         .payment-amount {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--text-main);
+            font-size: 1.5rem; font-weight: 800; color: var(--text-main);
             margin-bottom: 12px;
         }
 
         .payment-button {
-            background: var(--primary);
-            color: #000;
-            border: none;
-            padding: 16px 40px;
-            border-radius: var(--radius-full);
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            transition: var(--transition);
-            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+            background: var(--primary); color: #000; border: none;
+            padding: 16px 40px; border-radius: var(--radius-full);
+            font-size: 1rem; font-weight: 700; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 10px;
+            transition: var(--transition); box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
         }
+        .payment-button:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: var(--shadow-lg); }
 
-        .payment-button:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .payment-info {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-top: 10px;
-            font-weight: 500;
-        }
+        .payment-info { font-size: 0.75rem; color: var(--text-muted); margin-top: 10px; font-weight: 500; }
 
         /* Calendar / Date Picker */
-        .date-picker-container {
-            margin-top: 10px;
-        }
+        .date-picker-container { margin-top: 10px; }
 
-        .date-input-wrapper {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-        }
+        .date-input-wrapper { position: relative; display: inline-flex; align-items: center; }
 
         .date-input {
-            padding: 12px 40px 12px 16px;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border);
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-main);
-            background: var(--bg-light);
+            padding: 12px 40px 12px 16px; border-radius: var(--radius-md);
+            border: 1px solid var(--border); font-size: 0.9rem; font-weight: 600;
+            color: var(--text-main); background: var(--bg-light);
             font-family: 'Plus Jakarta Sans', sans-serif;
-            outline: none;
-            transition: var(--transition);
-            width: 200px;
+            outline: none; transition: var(--transition); width: 200px;
         }
-
-        .date-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px var(--primary-light);
-        }
+        .date-input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light); }
 
         .calendar-icon {
-            position: absolute;
-            right: 12px;
-            cursor: pointer;
-            color: var(--primary);
-            font-size: 1rem;
+            position: absolute; right: 12px; cursor: pointer;
+            color: var(--primary); font-size: 1rem;
         }
 
         .calendar-popup {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.3);
-            backdrop-filter: blur(2px);
-            z-index: 200;
-            justify-content: center;
-            align-items: center;
+            display: none; position: fixed; inset: 0;
+            background: rgba(15, 23, 42, 0.3); backdrop-filter: blur(2px);
+            z-index: 200; justify-content: center; align-items: center;
         }
 
         .calendar {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            box-shadow: var(--shadow-lg);
-            width: 320px;
+            background: white; border: 1px solid var(--border);
+            border-radius: var(--radius-lg); padding: 24px;
+            box-shadow: var(--shadow-lg); width: 320px;
         }
 
-        .calendar-header {
-            margin-bottom: 16px;
-        }
+        .calendar-header { margin-bottom: 16px; }
 
-        .calendar-nav {
-            display: flex;
-            gap: 8px;
-        }
+        .calendar-nav { display: flex; gap: 8px; }
 
         .calendar-select {
-            flex: 1;
-            padding: 8px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border);
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-main);
-            background: var(--bg-light);
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            cursor: pointer;
+            flex: 1; padding: 8px; border-radius: var(--radius-sm);
+            border: 1px solid var(--border); font-size: 0.85rem; font-weight: 600;
+            color: var(--text-main); background: var(--bg-light);
+            font-family: 'Plus Jakarta Sans', sans-serif; cursor: pointer;
         }
+        .calendar-select:focus { outline: none; border-color: var(--primary); }
 
-        .calendar-select:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
+        .calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 8px; }
+        .weekday { text-align: center; font-size: 0.7rem; font-weight: 700; color: var(--text-muted); padding: 6px; text-transform: uppercase; }
 
-        .calendar-weekdays {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 2px;
-            margin-bottom: 8px;
-        }
-
-        .weekday {
-            text-align: center;
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            padding: 6px;
-            text-transform: uppercase;
-        }
-
-        .calendar-days {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 2px;
-        }
+        .calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
 
         .day {
-            text-align: center;
-            padding: 10px;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-main);
-            border: none;
-            background: transparent;
+            text-align: center; padding: 10px; border-radius: var(--radius-sm);
+            cursor: pointer; font-size: 0.85rem; font-weight: 600;
+            color: var(--text-main); border: none; background: transparent;
             transition: var(--transition);
         }
+        .day:hover:not(.empty):not(.selected) { background: var(--primary-light); color: var(--primary); }
+        .day.selected { background: var(--primary); color: white; }
+        .day.today { border: 2px solid var(--primary); }
+        .day.empty { cursor: default; }
 
-        .day:hover:not(.empty):not(.selected) {
-            background: var(--primary-light);
-            color: var(--primary);
-        }
-
-        .day.selected {
-            background: var(--primary);
-            color: white;
-        }
-
-        .day.today {
-            border: 2px solid var(--primary);
-        }
-
-        .day.empty {
-            cursor: default;
-        }
-
-        .calendar-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 16px;
-        }
+        .calendar-actions { display: flex; gap: 8px; margin-top: 16px; }
 
         .calendar-btn {
-            flex: 1;
-            padding: 10px;
-            border-radius: var(--radius-full);
-            border: none;
-            font-size: 0.8rem;
-            font-weight: 700;
-            cursor: pointer;
+            flex: 1; padding: 10px; border-radius: var(--radius-full);
+            border: none; font-size: 0.8rem; font-weight: 700; cursor: pointer;
             transition: var(--transition);
         }
+        .calendar-btn.today { background: var(--primary); color: white; }
+        .calendar-btn.today:hover { background: var(--primary-hover); }
+        .calendar-btn.close { background: var(--bg-alt); color: var(--text-main); border: 1px solid var(--border); }
+        .calendar-btn.close:hover { background: var(--border); }
 
-        .calendar-btn.today {
-            background: var(--primary);
-            color: white;
-        }
-
-        .calendar-btn.today:hover {
-            background: var(--primary-hover);
-        }
-
-        .calendar-btn.close {
-            background: var(--bg-alt);
-            color: var(--text-main);
-            border: 1px solid var(--border);
-        }
-
-        .calendar-btn.close:hover {
-            background: var(--border);
-        }
-
-        .date-format-hint {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            margin-top: 6px;
-            font-weight: 500;
-        }
+        .date-format-hint { font-size: 0.7rem; color: var(--text-muted); margin-top: 6px; font-weight: 500; }
 
         /* Completion State */
         .completion-state {
-            display: none;
-            text-align: center;
-            padding: 32px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            max-width: 400px;
-            margin: 20px auto;
-            box-shadow: var(--shadow-md);
+            display: none; text-align: center; padding: 32px;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); max-width: 400px;
+            margin: 20px auto; box-shadow: var(--shadow-md);
         }
 
         .completion-icon {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            background: rgba(34, 197, 94, 0.1);
-            color: #22c55e;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            margin: 0 auto 16px;
+            width: 64px; height: 64px; border-radius: 50%;
+            background: rgba(34, 197, 94, 0.1); color: #22c55e;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; margin: 0 auto 16px;
         }
 
-        .completion-state h3 {
-            font-size: 1.2rem;
-            font-weight: 800;
-            margin-bottom: 6px;
-        }
-
-        .completion-state p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 16px;
-        }
+        .completion-state h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 6px; }
+        .completion-state p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px; }
 
         .order-id {
-            font-size: 1.5rem;
-            font-weight: 800;
-            font-family: monospace;
-            color: var(--primary);
-            background: var(--primary-light);
-            padding: 8px 20px;
-            border-radius: var(--radius-md);
-            display: inline-block;
+            font-size: 1.5rem; font-weight: 800; font-family: monospace;
+            color: var(--primary); background: var(--primary-light);
+            padding: 8px 20px; border-radius: var(--radius-md); display: inline-block;
         }
 
         /* Typing Indicator */
         .typing-indicator {
-            display: none;
-            align-items: center;
-            gap: 10px;
+            display: none; align-items: center; gap: 10px;
             margin-bottom: 20px;
         }
 
-        .loading-dots {
-            display: flex;
-            gap: 4px;
-            padding: 4px;
-        }
-
+        .loading-dots { display: flex; gap: 4px; padding: 4px; }
         .loading-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--text-muted);
-            animation: dotPulse 1.4s infinite ease-in-out;
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--text-muted); animation: dotPulse 1.4s infinite ease-in-out;
         }
-
-        .loading-dot:nth-child(1) {
-            animation-delay: -0.32s;
-        }
-
-        .loading-dot:nth-child(2) {
-            animation-delay: -0.16s;
-        }
-
-        @keyframes dotPulse {
-
-            0%,
-            80%,
-            100% {
-                transform: scale(0);
-            }
-
-            40% {
-                transform: scale(1);
-            }
-        }
+        .loading-dot:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes dotPulse { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
 
         /* Skip Button */
-        .skip-btn-container {
-            margin-top: 10px;
-        }
-
+        .skip-btn-container { margin-top: 10px; }
         .skip-btn {
-            background: var(--bg-alt);
-            border: 1px solid var(--border);
-            padding: 8px 18px;
-            border-radius: var(--radius-full);
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            color: var(--text-muted);
-            transition: var(--transition);
+            background: var(--bg-alt); border: 1px solid var(--border);
+            padding: 8px 18px; border-radius: var(--radius-full);
+            font-size: 0.8rem; font-weight: 600; cursor: pointer;
+            color: var(--text-muted); transition: var(--transition);
         }
-
-        .skip-btn:hover {
-            color: var(--primary);
-            border-color: var(--primary);
-        }
-
-        .skip-btn.disabled {
-            opacity: 0.4;
-            pointer-events: none;
-        }
+        .skip-btn:hover { color: var(--primary); border-color: var(--primary); }
+        .skip-btn.disabled { opacity: 0.4; pointer-events: none; }
 
         /* Mobile Responsive */
         @media (max-width: 768px) {
-            .chat-header {
-                padding: 10px 16px;
-                min-height: 60px;
-            }
-
-            .chat-header p {
-                display: none;
-            }
-
-            .online-indicator {
-                display: none !important;
-            }
-
             .sidebar {
-                display: flex;
-                position: fixed;
-                left: -320px;
-                top: 0;
-                bottom: 0;
-                z-index: 50;
-                transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+                display: flex; position: fixed; left: -320px; top: 0; bottom: 0;
+                z-index: 50; transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
                 box-shadow: none;
             }
-
-            .sidebar.open {
-                left: 0;
-                box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
-            }
-
+            .sidebar.open { left: 0; box-shadow: 4px 0 24px rgba(0,0,0,0.15); }
             .sidebar-overlay {
-                display: none;
-                position: fixed;
-                inset: 0;
-                z-index: 45;
-                background: rgba(15, 23, 42, 0.4);
-                backdrop-filter: blur(2px);
+                display: none; position: fixed; inset: 0; z-index: 45;
+                background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(2px);
             }
-
-            .sidebar-overlay.active {
-                display: block;
-            }
-
-            .app-container {
-                flex-direction: column;
-            }
-
-            .chat-section {
-                height: 100vh;
-            }
-
-            .message-content {
-                max-width: 90%;
-            }
-
-            .summary-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .mobile-menu-btn {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .welcome-banner .greeting {
-                font-size: 1rem;
-            }
-
-            .quick-chips {
-                gap: 6px;
-            }
-
-            .quick-chip {
-                padding: 6px 12px;
-                font-size: 0.72rem;
-            }
+            .sidebar-overlay.active { display: block; }
+            .app-container { flex-direction: column; }
+            .chat-section { height: 100vh; }
+            .message-content { max-width: 90%; }
+            .summary-grid { grid-template-columns: 1fr; }
+            .mobile-menu-btn { display: flex; align-items: center; justify-content: center; }
+            .welcome-banner .greeting { font-size: 1rem; }
+            .quick-chips { gap: 6px; }
+            .quick-chip { padding: 6px 12px; font-size: 0.72rem; }
         }
     </style>
 </head>
-
 <body id="body">
-    <div class="app-container">
+<div class="app-container">
 
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <img src="assets/ask-visa-logo-final.png" alt="Ask Visa">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <img src="assets/ask-visa-logo-final.png" alt="Ask Visa">
+            <div>
+                <div class="status"><span class="status-dot"></span> Online</div>
+            </div>
+        </div>
+
+        <div class="progress-section">
+            <div class="progress-meta">
                 <div>
-                    <div class="status"><span class="status-dot"></span> Online</div>
+                    <div class="progress-step-text" id="stepCount">Step 1/10</div>
+                    <div class="progress-label" id="stepLabel">Country Selection</div>
                 </div>
+                <div class="progress-percent" id="progressPercent">0%</div>
             </div>
-
-            <div class="progress-section">
-                <div class="progress-meta">
-                    <div>
-                        <div class="progress-step-text" id="stepCount">Step 1/10</div>
-                        <div class="progress-label" id="stepLabel">Country Selection</div>
-                    </div>
-                    <div class="progress-percent" id="progressPercent">0%</div>
-                </div>
-                <div class="progress-track">
-                    <div class="progress-bar" id="pBar" style="width: 0%;"></div>
-                </div>
-                <div class="applicant-count" id="applicantCount">Applicants: 0</div>
+            <div class="progress-track">
+                <div class="progress-bar" id="pBar" style="width: 0%;"></div>
             </div>
-
-            <div class="sidebar-actions">
-                <button class="sidebar-btn" onclick="toggleConfirm(true)"><i class="fas fa-plus-circle"></i> New
-                    Application</button>
-                <button class="sidebar-btn" onclick="window.location.href='edit.php'"><i class="fas fa-edit"></i> Edit
-                    Existing Order</button>
-                <button class="sidebar-btn" onclick="window.location.href='track_application.php'"><i
-                        class="fas fa-search-location"></i> Track My Application</button>
-                <button class="sidebar-btn" onclick="showSummary()"><i class="fas fa-download"></i> Download
-                    Summary</button>
-                <!-- <button class="sidebar-btn" onclick="window.location.href='privacy_policy.php'"><i class="fas fa-shield-alt"></i> Privacy Policy</button> -->
-                <button class="sidebar-btn" onclick="window.location.href='landing.php'"><i
-                        class="fas fa-arrow-left"></i> Back to Home</button>
-            </div>
-
-            <div class="sidebar-footer">&copy; 2026 Ask Visa. All rights reserved.</div>
+            <div class="applicant-count" id="applicantCount">Applicants: 0</div>
         </div>
 
-        <!-- Chat Section -->
-        <div class="chat-section">
-            <div class="chat-header">
-                <div class="chat-header-left">
-                    <button class="mobile-menu-btn" onclick="toggleMobileSidebar()" aria-label="Open menu">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <div class="chat-avatar-header"><i class="fas fa-robot"></i></div>
-                    <div>
-                        <h2>Ask Visa Assistant</h2>
-                        <p>We'll guide you through the application</p>
-                    </div>
-                </div>
-                <div class="chat-header-right">
-                    <div class="theme-toggle-label">
-                        <i class="fas fa-moon"></i>
-                        <button class="theme-toggle" id="themeToggle" onclick="toggleDarkMode()"
-                            aria-label="Toggle dark mode"></button>
-                    </div>
-                    <div class="online-indicator"><span class="status-dot"></span> Online</div>
+        <div class="sidebar-actions">
+            <button class="sidebar-btn" onclick="toggleConfirm(true)"><i class="fas fa-plus-circle"></i> New Application</button>
+            <button class="sidebar-btn" onclick="window.location.href='edit.php'"><i class="fas fa-edit"></i> Edit Existing Order</button>
+            <button class="sidebar-btn" onclick="showSummary()"><i class="fas fa-download"></i> Download Summary</button>
+            <!-- <button class="sidebar-btn" onclick="window.location.href='privacy_policy.php'"><i class="fas fa-shield-alt"></i> Privacy Policy</button> -->
+            <button class="sidebar-btn" onclick="window.location.href='landing.php'"><i class="fas fa-arrow-left"></i> Back to Home</button>
+        </div>
+
+        <div class="sidebar-footer">&copy; 2026 Ask Visa. All rights reserved.</div>
+    </div>
+
+    <!-- Chat Section -->
+    <div class="chat-section">
+        <div class="chat-header">
+            <div class="chat-header-left">
+                <button class="mobile-menu-btn" onclick="toggleMobileSidebar()" aria-label="Open menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="chat-avatar-header"><i class="fas fa-robot"></i></div>
+                <div>
+                    <h2>Ask Visa Assistant</h2>
+                    <p>We'll guide you through the application</p>
                 </div>
             </div>
+            <div class="chat-header-right">
+                <div class="theme-toggle-label">
+                    <i class="fas fa-moon"></i>
+                    <button class="theme-toggle" id="themeToggle" onclick="toggleDarkMode()" aria-label="Toggle dark mode"></button>
+                </div>
+                <span class="status-dot"></span> Online
+            </div>
+        </div>
 
-            <div class="chat-container" id="chat">
-                <?php if (count($_SESSION['messages']) <= 1): ?>
-                    <div class="welcome-banner" id="welcomeBanner">
-                        <div class="greeting">Welcome to Ask Visa! &#128075;</div>
-                        <div class="sub-greeting">Start your visa application in minutes. Pick a destination or type below.
-                        </div>
-                        <div class="quick-chips">
-                            <div class="quick-chip" onclick="quickSelect('Thailand')">
-                                <i class="fas fa-plane-departure"></i> Thailand
-                            </div>
-                            <div class="quick-chip" onclick="quickSelect('Dubai')">
-                                <i class="fas fa-city"></i> Dubai
-                            </div>
-                            <div class="quick-chip" onclick="quickSelect('Singapore')">
-                                <i class="fas fa-globe-asia"></i> Singapore
-                            </div>
-                            <div class="quick-chip" onclick="quickSelect('Malaysia')">
-                                <i class="fas fa-umbrella-beach"></i> Malaysia
-                            </div>
-                            <div class="quick-chip" onclick="quickSelect('Check Status')">
-                                <i class="fas fa-search"></i> Check Status
-                            </div>
-                        </div>
+        <div class="chat-container" id="chat">
+            <?php if (count($_SESSION['messages']) <= 1): ?>
+            <div class="welcome-banner" id="welcomeBanner">
+                <div class="greeting">Welcome to Ask Visa! &#128075;</div>
+                <div class="sub-greeting">Start your visa application in minutes. Pick a destination or type below.</div>
+                <div class="quick-chips">
+                    <div class="quick-chip" onclick="quickSelect('Thailand')">
+                        <i class="fas fa-plane-departure"></i> Thailand
                     </div>
-                    <?php
-                endif; ?>
+                    <div class="quick-chip" onclick="quickSelect('Dubai')">
+                        <i class="fas fa-city"></i> Dubai
+                    </div>
+                    <div class="quick-chip" onclick="quickSelect('Singapore')">
+                        <i class="fas fa-globe-asia"></i> Singapore
+                    </div>
+                    <div class="quick-chip" onclick="quickSelect('Malaysia')">
+                        <i class="fas fa-umbrella-beach"></i> Malaysia
+                    </div>
+                    <div class="quick-chip" onclick="quickSelect('Check Status')">
+                        <i class="fas fa-search"></i> Check Status
+                    </div>
+                </div>
+            </div>
+            <?php
+endif; ?>
 
-                <?php foreach ($_SESSION['messages'] as $m): ?>
-                    <?php if ($m['role'] === 'bot'): ?>
-                        <div class="message-row bot">
-                            <div class="message-avatar"><i class="fas fa-robot"></i></div>
-                            <div class="message-content">
-                                <div class="message-text">
-                                    <?php
-                                    $displayText = $m['text'];
-                                    if (strpos($displayText, 'json_select:') === 0) {
-                                        $parts = explode(':', $displayText, 3);
-                                        $displayText = $parts[2] ?? $displayText;
-                                    }
-                                    echo formatBold($displayText);
-                                    ?>
-                                </div>
-                                <?php if (isset($m['img']) && $m['img']): ?>
-                                    <div class="message-attachment">
-                                        <?php if (isset($m['is_pdf']) && $m['is_pdf']):
-                                            $pdf_name = $m['pdf_name'] ?? (isset($_SESSION['order_id']) ? "Invoice_Order_#" . $_SESSION['order_id'] . ".pdf" : "Document.pdf");
-                                            $preview_url = $m['img'] . '&inline=1';
-                                            ?>
-                                            <div class="pdf-card" onclick="openLightbox('<?php echo $preview_url; ?>', true)">
-                                                <i class="fas fa-file-pdf pdf-icon"></i>
-                                                <div class="pdf-info">
-                                                    <h4><?php echo $pdf_name; ?></h4>
-                                                    <p>Tap to view</p>
-                                                </div>
+            <?php foreach ($_SESSION['messages'] as $m): ?>
+                <?php if ($m['role'] === 'bot'): ?>
+                    <div class="message-row bot">
+                        <div class="message-avatar"><i class="fas fa-robot"></i></div>
+                        <div class="message-content">
+                            <div class="message-text">
+                                <?php
+        $displayText = $m['text'];
+        if (strpos($displayText, 'json_select:') === 0) {
+            $parts = explode(':', $displayText, 3);
+            $displayText = $parts[2] ?? $displayText;
+        }
+        echo formatBold($displayText);
+?>
+                            </div>
+                            <?php if (isset($m['img']) && $m['img']): ?>
+                                <div class="message-attachment">
+                                    <?php if (isset($m['is_pdf']) && $m['is_pdf']):
+                $pdf_name = $m['pdf_name'] ?? (isset($_SESSION['order_id']) ? "Invoice_Order_#" . $_SESSION['order_id'] . ".pdf" : "Document.pdf");
+                $preview_url = $m['img'] . '&inline=1';
+?>
+                                        <div class="pdf-card" onclick="openLightbox('<?php echo $preview_url; ?>', true)">
+                                            <i class="fas fa-file-pdf pdf-icon"></i>
+                                            <div class="pdf-info">
+                                                <h4><?php echo $pdf_name; ?></h4>
+                                                <p>Tap to view</p>
                                             </div>
-                                            <?php
-                                        else: ?>
-                                            <img src="<?php echo $m['img']; ?>" class="msg-img" onclick="openLightbox(this.src)">
-                                            <?php
-                                        endif; ?>
-                                    </div>
+                                        </div>
                                     <?php
-                                endif; ?>
-                                <div class="message-time"><?php echo date('H:i'); ?> &bull; Bot</div>
-                            </div>
-                        </div>
-                        <?php
-                    else: ?>
-                        <div class="message-row user">
-                            <div class="message-content">
-                                <div class="message-text"><?php echo formatBold($m['text']); ?></div>
-                                <?php if (isset($m['img']) && $m['img']): ?>
-                                    <div class="message-attachment">
+            else: ?>
                                         <img src="<?php echo $m['img']; ?>" class="msg-img" onclick="openLightbox(this.src)">
-                                    </div>
                                     <?php
-                                endif; ?>
-                                <div class="message-time"><?php echo date('H:i'); ?> &bull; You</div>
-                            </div>
-                            <div class="message-avatar"><i class="fas fa-user"></i></div>
-                        </div>
-                        <?php
-                    endif; ?>
-                    <?php
-                endforeach; ?>
-
-                <div id="completionState" class="completion-state">
-                    <div class="completion-icon"><i class="fas fa-check-circle"></i></div>
-                    <h3>Application Complete!</h3>
-                    <p>Your visa application has been successfully submitted.</p>
-                    <div class="order-id" id="finalOrderId">#0000</div>
-                    <p style="margin-top: 12px; font-size: 0.75rem; color: var(--text-muted);">You will receive a
-                        confirmation email shortly.</p>
-                </div>
-
-                <div class="typing-indicator" id="typingIndicator">
-                    <div class="message-avatar"
-                        style="background: var(--primary-light); color: var(--primary); border: 1px solid rgba(220,38,38,0.15); margin-right: 10px;">
-                        <i class="fas fa-robot"></i>
-                    </div>
-                    <div
-                        style="background: var(--surface); border: 1px solid var(--border); padding: 12px 16px; border-radius: 0 var(--radius-lg) var(--radius-lg) var(--radius-lg);">
-                        <div class="loading-dots">
-                            <div class="loading-dot"></div>
-                            <div class="loading-dot"></div>
-                            <div class="loading-dot"></div>
+            endif; ?>
+                                </div>
+                            <?php
+        endif; ?>
+                            <div class="message-time"><?php echo date('H:i'); ?> &bull; Bot</div>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <div id="previewTray">
-                <img id="previewImg" src="">
-                <div class="preview-info">
-                    <h4 id="previewFileName">File Preview</h4>
-                    <p id="previewFileSize">Ready to upload</p>
-                </div>
-                <div class="preview-close" onclick="clearPreview()"><i class="fas fa-times"></i></div>
-            </div>
-
-            <div class="input-section">
-                <div class="input-wrapper">
-                    <div class="input-inner">
-                        <label id="attachBtn" class="file-upload-btn disabled">
-                            <i class="fas fa-paperclip"></i>
-                            <input type="file" id="fileInput" hidden accept="image/*,application/pdf" disabled
-                                onchange="handlePreview(this)">
-                        </label>
-                        <input type="text" id="msgInput" class="input-field" placeholder="Type your message..."
-                            autocomplete="off">
+                <?php
+    else: ?>
+                    <div class="message-row user">
+                        <div class="message-content">
+                            <div class="message-text"><?php echo formatBold($m['text']); ?></div>
+                            <?php if (isset($m['img']) && $m['img']): ?>
+                                <div class="message-attachment">
+                                    <img src="<?php echo $m['img']; ?>" class="msg-img" onclick="openLightbox(this.src)">
+                                </div>
+                            <?php
+        endif; ?>
+                            <div class="message-time"><?php echo date('H:i'); ?> &bull; You</div>
+                        </div>
+                        <div class="message-avatar"><i class="fas fa-user"></i></div>
                     </div>
-                    <button id="sendBtn" onclick="sendMessage()" class="send-btn">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
+                <?php
+    endif; ?>
+            <?php
+endforeach; ?>
+
+            <div id="completionState" class="completion-state">
+                <div class="completion-icon"><i class="fas fa-check-circle"></i></div>
+                <h3>Application Complete!</h3>
+                <p>Your visa application has been successfully submitted.</p>
+                <div class="order-id" id="finalOrderId">#0000</div>
+                <p style="margin-top: 12px; font-size: 0.75rem; color: var(--text-muted);">You will receive a confirmation email shortly.</p>
+            </div>
+
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="message-avatar" style="background: var(--primary-light); color: var(--primary); border: 1px solid rgba(220,38,38,0.15); margin-right: 10px;">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div style="background: var(--surface); border: 1px solid var(--border); padding: 12px 16px; border-radius: 0 var(--radius-lg) var(--radius-lg) var(--radius-lg);">
+                    <div class="loading-dots">
+                        <div class="loading-dot"></div>
+                        <div class="loading-dot"></div>
+                        <div class="loading-dot"></div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Mobile Sidebar Overlay -->
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
-
-    <!-- Lightbox -->
-    <div id="lightbox" onclick="closeLightbox()">
-        <div class="lightbox-close" onclick="closeLightbox()"><i class="fas fa-times"></i></div>
-        <div id="lbContainer" onclick="event.stopPropagation()">
-            <img id="lbImg">
-            <iframe id="lbPdf"></iframe>
+        <div id="previewTray">
+            <img id="previewImg" src="">
+            <div class="preview-info">
+                <h4 id="previewFileName">File Preview</h4>
+                <p id="previewFileSize">Ready to upload</p>
+            </div>
+            <div class="preview-close" onclick="clearPreview()"><i class="fas fa-times"></i></div>
         </div>
-    </div>
 
-    <!-- Confirm Overlay -->
-    <div id="confirmOverlay" class="confirm-overlay">
-        <div class="confirm-card">
-            <div class="confirm-icon"><i class="fas fa-exclamation-triangle"></i></div>
-            <h3>Reset Application?</h3>
-            <p>This will clear all current progress and start a new application. This action cannot be undone.</p>
-            <div class="confirm-actions">
-                <form method="POST" style="width:100%; margin:0;">
-                    <button type="submit" name="reset" class="confirm-btn danger">Yes, Reset Now</button>
-                </form>
-                <button onclick="toggleConfirm(false)" class="confirm-btn cancel">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Summary Popup -->
-    <div id="summaryPopup" class="summary-popup">
-        <div class="summary-container">
-            <div class="summary-header">
-                <h3>Application Summary</h3>
-                <div class="summary-close" onclick="closeSummaryPopup()"><i class="fas fa-times"></i></div>
-            </div>
-            <div class="summary-content" id="summaryContent">
-                <!-- Dynamic Content inserted here -->
-            </div>
-            <div class="summary-footer">
-                <div class="summary-actions">
-                    <button id="downloadPdfBtn" class="summary-btn download" onclick="downloadSummaryAsPDF()">
-                        <i class="fas fa-download"></i> Download PDF
-                    </button>
-                    <button class="summary-btn close-btn" onclick="closeSummaryPopup()">Close</button>
+        <div class="input-section">
+            <div class="input-wrapper">
+                <div class="input-inner">
+                    <label id="attachBtn" class="file-upload-btn disabled">
+                        <i class="fas fa-paperclip"></i>
+                        <input type="file" id="fileInput" hidden accept="image/*,application/pdf" disabled onchange="handlePreview(this)">
+                    </label>
+                    <input type="text" id="msgInput" class="input-field" placeholder="Type your message..." autocomplete="off">
                 </div>
-                <div style="font-size: 0.65rem; color: var(--text-muted);">
-                    Generated <span id="summaryDate">...</span>
-                </div>
+                <button id="sendBtn" onclick="sendMessage()" class="send-btn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
+<!-- Mobile Sidebar Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
+
+<!-- Lightbox -->
+<div id="lightbox" onclick="closeLightbox()">
+    <div class="lightbox-close" onclick="closeLightbox()"><i class="fas fa-times"></i></div>
+    <div id="lbContainer" onclick="event.stopPropagation()">
+        <img id="lbImg">
+        <iframe id="lbPdf"></iframe>
+    </div>
+</div>
+
+<!-- Confirm Overlay -->
+<div id="confirmOverlay" class="confirm-overlay">
+    <div class="confirm-card">
+        <div class="confirm-icon"><i class="fas fa-exclamation-triangle"></i></div>
+        <h3>Reset Application?</h3>
+        <p>This will clear all current progress and start a new application. This action cannot be undone.</p>
+        <div class="confirm-actions">
+            <form method="POST" style="width:100%; margin:0;">
+                <button type="submit" name="reset" class="confirm-btn danger">Yes, Reset Now</button>
+            </form>
+            <button onclick="toggleConfirm(false)" class="confirm-btn cancel">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Summary Popup -->
+<div id="summaryPopup" class="summary-popup">
+    <div class="summary-container">
+        <div class="summary-header">
+            <h3>Application Summary</h3>
+            <div class="summary-close" onclick="closeSummaryPopup()"><i class="fas fa-times"></i></div>
+        </div>
+        <div class="summary-content" id="summaryContent">
+            <!-- Dynamic Content inserted here -->
+        </div>
+        <div class="summary-footer">
+            <div class="summary-actions">
+                <button id="downloadPdfBtn" class="summary-btn download" onclick="downloadSummaryAsPDF()">
+                    <i class="fas fa-download"></i> Download PDF
+                </button>
+                <button class="summary-btn close-btn" onclick="closeSummaryPopup()">Close</button>
+            </div>
+            <div style="font-size: 0.65rem; color: var(--text-muted);">
+                Generated <span id="summaryDate">...</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
         const chat = document.getElementById('chat');
         const msgInput = document.getElementById('msgInput');
         const fileInput = document.getElementById('fileInput');
@@ -4360,56 +3362,21 @@ if (isset($_POST['reset'])) {
 
         // Function to create select dropdown
         function createSelectDropdown(questionId, options) {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'w-full max-w-[420px] pt-1';
-
             const container = document.createElement('div');
             container.className = 'select-container';
-
-            // Limit height and enable scroll if more than 6 options
-            if (options.length > 6) {
-                container.classList.add('scrollable-options');
-            }
-
-            // Add Search Box if many options
-            if (options.length > 5) {
-                const searchContainer = document.createElement('div');
-                searchContainer.className = 'select-search-container';
-                searchContainer.innerHTML = `
-                    <i class="fas fa-search select-search-icon"></i>
-                    <input type="text" class="select-search-input" placeholder="Search province..." autocomplete="off">
-                `;
-
-                const searchInput = searchContainer.querySelector('input');
-                searchInput.oninput = (e) => {
-                    const term = e.target.value.toLowerCase().trim();
-                    const optElements = container.querySelectorAll('.select-option');
-
-                    optElements.forEach(el => {
-                        const text = el.textContent.toLowerCase();
-                        if (text.indexOf(term) !== -1) {
-                            el.style.display = 'flex';
-                        } else {
-                            el.style.display = 'none';
-                        }
-                    });
-
-                    // Maintain scrolling context if needed
-                    container.scrollTop = 0;
-                };
-
-                wrapper.appendChild(searchContainer);
-            }
 
             options.forEach(opt => {
                 const optionDiv = document.createElement('div');
                 optionDiv.className = 'select-option';
 
                 // Create inner content structure for better styling
+                // Check if label contains price/currency for formatting
                 let labelText = opt.option_label || opt.label;
                 let valueStr = opt.option_value || opt.value;
 
                 // Try to split logic if it matches our standard format "Name - Currency Price"
+                // Regex to match: Name - Currency Price
+                // e.g. "Tourist Visa - INR 2500"
                 const priceMatch = labelText.match(/^(.*?) - (.*?) (.*?)$/);
 
                 if (priceMatch) {
@@ -4423,25 +3390,24 @@ if (isset($_POST['reset'])) {
 
                 optionDiv.dataset.value = valueStr;
 
-                optionDiv.onclick = (e) => {
-                    // Use the unified selectOption flow
-                    currentSelectSelection = valueStr;
-                    currentSelectLabel = labelText;
-                    currentQuestionId = questionId;
-
-                    // Manual Highlight (selectOption might fail if global event is not captured correctly)
+                optionDiv.onclick = () => {
+                    // Remove selected class from others
                     container.querySelectorAll('.select-option').forEach(el => el.classList.remove('selected'));
                     optionDiv.classList.add('selected');
 
-                    // Immediate Action - Don't wait for timeout if manually handled
+                    // Store selection
+                    currentSelectSelection = optionDiv.dataset.value;
+                    currentSelectLabel = labelText; // Capture label for display
+                    currentQuestionId = questionId;
+
+                    // Auto-send
                     sendMessage();
                 };
 
                 container.appendChild(optionDiv);
             });
 
-            wrapper.appendChild(container);
-            return wrapper;
+            return container;
         }
 
         // Summary functions
@@ -4642,6 +3608,7 @@ if (isset($_POST['reset'])) {
                     content.innerHTML = html;
                     document.getElementById('summaryDate').textContent = new Date().toLocaleString();
                     document.getElementById('summaryPopup').style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
 
                     // Store data for PDF download
                     window.summaryData = data;
@@ -4689,6 +3656,7 @@ if (isset($_POST['reset'])) {
         // Function to close summary popup
         function closeSummaryPopup() {
             document.getElementById('summaryPopup').style.display = 'none';
+            document.body.style.overflow = 'auto';
         }
 
         // Error handling for images
@@ -4900,7 +3868,7 @@ if (isset($_POST['reset'])) {
                     if (stepCount && p.count) stepCount.textContent = p.count;
                     if (applicantCount && p.applicant) applicantCount.textContent = p.applicant;
                     if (p.orderId) currentOrderId = p.orderId;
-                } catch (e) { }
+                } catch (e) {}
             }
         }
 
@@ -5038,5 +4006,4 @@ if (isset($_POST['reset'])) {
     </script>
     <!-- <script src="automation.js"></script> -->
 </body>
-
 </html>

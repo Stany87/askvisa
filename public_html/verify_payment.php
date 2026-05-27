@@ -66,14 +66,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $agent_id = $_SESSION['b2b_agent_id'] ?? null;
                 $stmt = $pdo->prepare("
                     INSERT INTO visa_orders 
-                    (country_id, visa_type_id, visa_type, processing_time, email, phone, total_amount, currency, payment_status, visa_status, agent_id) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'paid', 'initiated', ?)
+                    (country_id, email, phone, total_amount, currency, payment_status, visa_status, agent_id) 
+                    VALUES (?, ?, ?, ?, ?, 'paid', 'initiated', ?)
                 ");
                 $stmt->execute([
                     $order_data['country_id'],
-                    $order_data['visa_type_id'] ?? null,
-                    $order_data['visa_type_name'] ?? 'Standard Visa',
-                    $order_data['processing_time'] ?? 'Standard Processing',
                     $order_data['order_contact_email'],
                     $order_data['order_contact_phone'],
                     $order_data['payment_amount'],
