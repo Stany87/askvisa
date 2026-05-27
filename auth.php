@@ -2,7 +2,8 @@
 session_start();
 require_once __DIR__ . '/../config.php';
 
-function getDB() {
+function getDB()
+{
     static $pdo = null;
     if ($pdo === null) {
         $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET;
@@ -14,34 +15,64 @@ function getDB() {
     return $pdo;
 }
 
-function login($email, $password) {
+function login($email, $password)
+{
     $db = getDB();
-    $stmt = $db->prepare('SELECT * FROM agents WHERE email = ? AND is_active = 1');
-    $stmt->execute([$email]);
-    $agent = $stmt->fetch();
-    if ($agent && password_verify($password, $agent['password_hash'])) {
-        $_SESSION['agent_id'] = $agent['id'];
-        $_SESSION['agent_name'] = $agent['contact_name'];
-        $_SESSION['agency_name'] = $agent['agency_name'];
-        return true;
+    $email = trim((string) $email);
+    if ($email === '' || $password === '') {
+        return false;
     }
+
+    // Primary schema used in existing production flow.
+    try {
+        $stmt = $db->prepare('SELECT id, company_name, contact_person, email, password_hash, status FROM b2b_agents WHERE email = ? LIMIT 1');
+        $stmt->execute([$email]);
+        $agent = $stmt->fetch();
+        if ($agent && password_verify($password, $agent['password_hash']) && ($agent['status'] ?? '') === 'active') {
+            $_SESSION['agent_id'] = (int) $agent['id'];
+            $_SESSION['agent_name'] = $agent['contact_person'] ?: $agent['company_name'];
+            $_SESSION['agency_name'] = $agent['company_name'];
+            return true;
+        }
+    } catch (PDOException $e) {
+        // Fall through to legacy schema below.
+    }
+
+    // Legacy/alternate schema fallback.
+    try {
+        $stmt = $db->prepare('SELECT * FROM agents WHERE email = ? AND is_active = 1 LIMIT 1');
+        $stmt->execute([$email]);
+        $agent = $stmt->fetch();
+        if ($agent && password_verify($password, $agent['password_hash'])) {
+            $_SESSION['agent_id'] = (int) $agent['id'];
+            $_SESSION['agent_name'] = $agent['contact_name'] ?? ($agent['agency_name'] ?? '');
+            $_SESSION['agency_name'] = $agent['agency_name'] ?? '';
+            return true;
+        }
+    } catch (PDOException $e) {
+        return false;
+    }
+
     return false;
 }
 
-function logout() {
+function logout()
+{
     session_destroy();
     header('Location: login.php');
     exit;
 }
 
-function requireLogin() {
+function requireLogin()
+{
     if (empty($_SESSION['agent_id'])) {
         header('Location: login.php');
         exit;
     }
 }
 
-function getAgent() {
+function getAgent()
+{
     return [
         'id' => $_SESSION['agent_id'] ?? null,
         'name' => $_SESSION['agent_name'] ?? '',
@@ -49,7 +80,8 @@ function getAgent() {
     ];
 }
 
-function getAgentStats($agentId) {
+function getAgentStats($agentId)
+{
     $db = getDB();
     $stats = ['total' => 0, 'processing' => 0, 'approved' => 0, 'rejected' => 0];
     $stmt = $db->prepare('SELECT visa_status, COUNT(*) as cnt FROM visa_orders WHERE agent_id = ? GROUP BY visa_status');
@@ -67,7 +99,8 @@ function getAgentStats($agentId) {
     return $stats;
 }
 
-function getRecentOrders($agentId, $limit = 10) {
+function getRecentOrders($agentId, $limit = 10)
+{
     $db = getDB();
     $limit = intval($limit);
     $stmt = $db->prepare("
@@ -89,7 +122,8 @@ function getRecentOrders($agentId, $limit = 10) {
     return $stmt->fetchAll();
 }
 
-function getAllOrders($agentId, $filters = []) {
+function getAllOrders($agentId, $filters = [])
+{
     $db = getDB();
     $where = ['vo.agent_id = ?'];
     $params = [$agentId];
@@ -145,7 +179,8 @@ function getAllOrders($agentId, $filters = []) {
     ];
 }
 
-function getOrderDetail($orderId, $agentId) {
+function getOrderDetail($orderId, $agentId)
+{
     $db = getDB();
     $stmt = $db->prepare('
         SELECT vo.*, c.country_name
@@ -155,7 +190,8 @@ function getOrderDetail($orderId, $agentId) {
     ');
     $stmt->execute([$orderId, $agentId]);
     $order = $stmt->fetch();
-    if (!$order) return null;
+    if (!$order)
+        return null;
 
     // Applicants
     $appStmt = $db->prepare('SELECT * FROM applicants WHERE order_id = ?');
@@ -187,22 +223,24 @@ function getOrderDetail($orderId, $agentId) {
     return $order;
 }
 
-function getCountries() {
+function getCountries()
+{
     $db = getDB();
     return $db->query('SELECT * FROM countries WHERE is_active = 1 ORDER BY country_name')->fetchAll();
 }
 
-function statusBadge($status) {
+function statusBadge($status)
+{
     $map = [
         'initiated' => ['⏳', '#f59e0b', '#fffbeb'],
         'in_review' => ['🔍', '#3b82f6', '#eff6ff'],
-        'approved'  => ['✅', '#16a34a', '#f0fdf4'],
-        'rejected'  => ['❌', '#dc2626', '#fef2f2'],
-        'pending'   => ['⏳', '#f59e0b', '#fffbeb'],
-        'paid'      => ['✅', '#16a34a', '#f0fdf4'],
-        'success'   => ['✅', '#16a34a', '#f0fdf4'],
-        'failed'    => ['❌', '#dc2626', '#fef2f2'],
+        'approved' => ['✅', '#16a34a', '#f0fdf4'],
+        'rejected' => ['❌', '#dc2626', '#fef2f2'],
+        'pending' => ['⏳', '#f59e0b', '#fffbeb'],
+        'paid' => ['✅', '#16a34a', '#f0fdf4'],
+        'success' => ['✅', '#16a34a', '#f0fdf4'],
+        'failed' => ['❌', '#dc2626', '#fef2f2'],
     ];
     $s = $map[$status] ?? ['•', '#6b7280', '#f3f4f6'];
-    return '<span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:6px;font-size:.75rem;font-weight:600;background:'.$s[2].';color:'.$s[1].'">'.$s[0].' '.ucfirst(str_replace('_',' ',$status)).'</span>';
+    return '<span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:6px;font-size:.75rem;font-weight:600;background:' . $s[2] . ';color:' . $s[1] . '">' . $s[0] . ' ' . ucfirst(str_replace('_', ' ', $status)) . '</span>';
 }

@@ -1,0 +1,11 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 460">
+<defs><linearGradient id="c" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0b1120"/><stop offset="1" stop-color="#1f2937"/></linearGradient><linearGradient id="r" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#dc2626"/><stop offset="1" stop-color="#fb7185"/></linearGradient></defs>
+<rect width="1200" height="460" fill="url(#c)"/>
+<circle cx="1030" cy="80" r="170" fill="rgba(220,38,38,0.15)"/>
+<circle cx="210" cy="380" r="220" fill="rgba(59,130,246,0.12)"/>
+<rect x="120" y="140" width="420" height="110" rx="16" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.16)"/>
+<rect x="620" y="140" width="420" height="110" rx="16" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.16)"/>
+<rect x="120" y="285" width="320" height="56" rx="28" fill="url(#r)"/>
+<rect x="465" y="285" width="320" height="56" rx="28" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.25)"/>
+<text x="120" y="90" font-family="Inter,Arial" font-size="40" fill="#fff" font-weight="800">Start Fast with Demo or Guided Onboarding</text>
+</svg>

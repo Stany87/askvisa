@@ -1,0 +1,7 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520">
+<rect width="1200" height="520" fill="#f8fafc"/>
+<rect x="80" y="70" width="1040" height="380" rx="18" fill="#fff" stroke="#e5e7eb"/>
+<rect x="120" y="120" width="960" height="48" rx="10" fill="#f3f4f6"/><rect x="120" y="184" width="960" height="48" rx="10" fill="#f3f4f6"/><rect x="120" y="248" width="960" height="48" rx="10" fill="#f3f4f6"/><rect x="120" y="312" width="960" height="48" rx="10" fill="#f3f4f6"/>
+<circle cx="154" cy="144" r="8" fill="#dc2626"/><circle cx="154" cy="208" r="8" fill="#dc2626"/><circle cx="154" cy="272" r="8" fill="#dc2626"/><circle cx="154" cy="336" r="8" fill="#dc2626"/>
+<text x="80" y="46" font-family="Inter,Arial" font-size="32" fill="#0f172a" font-weight="700">FAQ & Support Answers</text>
+</svg>

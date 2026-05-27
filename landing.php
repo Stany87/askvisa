@@ -46,6 +46,43 @@
             max-width: 560px;
             line-height: 1.6;
         }
+        .section-cta-row {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .section-cta {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9px;
+            padding: 10px 16px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+        }
+        .section-cta.primary {
+            background: #dc2626;
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(220,38,38,0.2);
+        }
+        .section-cta.primary:hover {
+            color: #fff;
+            background: #b91c1c;
+            transform: translateY(-1px);
+        }
+        .section-cta.secondary {
+            background: #fff;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+        .section-cta.secondary:hover {
+            color: #111827;
+            border-color: #9ca3af;
+            transform: translateY(-1px);
+        }
         .badge-soon {
             display: inline-block;
             font-size: 0.65rem;
@@ -95,10 +132,10 @@
             transition: opacity 0.4s;
         }
         .mouse-glow.visible { opacity: 1; }
-        /* ── SVG icon styles ── */
+        /* -- SVG icon styles -- */
         .svg-icon { display: inline-block; vertical-align: middle; }
 
-        /* ── Nav ── */
+        /* -- Nav -- */
         nav {
             position: fixed; top: 0; left: 0; right: 0;
             background: rgba(255,255,255,0.92);
@@ -200,7 +237,7 @@
         .nav-links a.btn-nav-login:hover {
             color: #b91c1c;
         }
-        /* ── HERO ── */
+        /* -- HERO -- */
         .hero {
             position: relative;
             padding: 160px 0 130px;
@@ -228,7 +265,7 @@
             z-index: 2;
             pointer-events: none;
         }
-        .hero > .container { position: relative; z-index: 3; }
+        .hero > .container { position: relative; z-index: 5; }
         .hero h1 {
             font-size: 2.8rem; font-weight: 900; letter-spacing: -0.035em;
             line-height: 1.1; margin-bottom: 16px;
@@ -257,6 +294,65 @@
             text-transform: uppercase; letter-spacing: 1px;
         }
         .search-wrap { max-width: 620px; margin: 0 auto; }
+        .hero-cta-row {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 0 0 26px;
+        }
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 22px;
+            border-radius: 10px;
+            font-size: 0.86rem;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+        }
+        .hero-cta.primary {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: #fff;
+            box-shadow: 0 10px 24px rgba(220,38,38,0.3);
+        }
+        .hero-cta.primary:hover {
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 14px 28px rgba(220,38,38,0.34);
+        }
+        .hero-cta.secondary {
+            border: 1px solid rgba(255,255,255,0.26);
+            color: #fff;
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        .hero-cta.secondary:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.12);
+            transform: translateY(-1px);
+        }
+        .hero-product-shot {
+            max-width: 860px;
+            margin: 0 auto 28px;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.18);
+            box-shadow: 0 30px 70px rgba(2,6,23,0.45), inset 0 1px 0 rgba(255,255,255,0.18);
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            position: relative;
+            z-index: 3;
+        }
+        .hero-product-shot img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
         .search-box {
             display: flex;
             border: 1px solid rgba(255,255,255,0.15);
@@ -298,7 +394,7 @@
         }
         .chip:hover { border-color: #dc2626; color: #fff; background: rgba(220,38,38,0.2); }
 
-        /* ── Hero SVG decorations ── */
+        /* -- Hero SVG decorations -- */
         .hero-svg-deco {
             position: absolute;
             pointer-events: none;
@@ -325,16 +421,17 @@
             50% { transform: translateY(-8px) scale(1.05); opacity: 0.6; }
         }
 
-        /* ── Hero world map ── */
+        /* -- Hero world map -- */
         .hero-map {
             position: absolute;
-            bottom: -20px; left: 0; right: 0;
+            top: -145px; left: 0; right: 0;
             margin: 0 auto;
-            width: 1000px; max-width: 130%;
-            opacity: 0.07;
+            width: 1080px; max-width: 140%;
+            opacity: 0.22;
             pointer-events: none;
-            z-index: 1;
-            filter: drop-shadow(0 0 40px rgba(220,38,38,0.03));
+            z-index: 4;
+            filter: drop-shadow(0 0 40px rgba(220,38,38,0.06));
+            mix-blend-mode: screen;
         }
         .hero-map::after {
             content: '';
@@ -345,7 +442,7 @@
             pointer-events: none;
         }
 
-        /* ── Trust Bar ── */
+        /* -- Trust Bar -- */
         .trust-bar {
             padding: 32px 0;
             background: #fff;
@@ -381,7 +478,7 @@
         .trust-item svg { color: #dc2626; width: 16px; height: 16px; flex-shrink: 0; }
         .trust-item strong { color: #111827; font-weight: 700; }
 
-        /* ── Search Results ── */
+        /* -- Search Results -- */
         .results-wrap { display: none; padding: 60px 0 30px; }
         .results-wrap.visible { display: block; }
         .results-header {
@@ -458,7 +555,7 @@
         }
         .results-none { text-align: center; padding: 50px 20px; color: #9ca3af; font-size: 0.95rem; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; }
 
-        /* ── Dotted background pattern for sections ── */
+        /* -- Dotted background pattern for sections -- */
         .dot-pattern {
             position: relative;
         }
@@ -472,7 +569,7 @@
             z-index: 0;
         }
 
-        /* ── Countries — image cards ── */
+        /* -- Countries — image cards -- */
         .countries { background: #fff; position: relative; overflow: hidden; }
         .countries::before {
             content: '';
@@ -531,7 +628,7 @@
         .cc-badge { flex-shrink: 0; }
         .cc-badge .badge-live, .cc-badge .badge-soon { padding: 3px 10px; font-size: 0.6rem; }
 
-        /* ── Features — unique alternating ── */
+        /* -- Features — unique alternating -- */
         .features { background: #f8f9fa; position: relative; }
         .features::before {
             content: '';
@@ -588,7 +685,7 @@
             opacity: 0.6;
         }
 
-        /* ── Showcase (Document ID + Real-Time) ── */
+        /* -- Showcase (Document ID + Real-Time) -- */
         .showcase {
             padding: 80px 0;
             position: relative;
@@ -693,7 +790,7 @@
         }
         .sc-list li .sc-ic svg { width: 18px; height: 18px; }
 
-        /* ── Body airplane decorations ── */
+        /* -- Body airplane decorations -- */
         .body-plane {
             position: absolute;
             pointer-events: none;
@@ -747,7 +844,7 @@
             50% { transform: translateY(-10px) rotate(3deg); opacity: 0.8; }
         }
 
-        /* ── How It Works — connected timeline ── */
+        /* -- How It Works — connected timeline -- */
         .how { background: #fff; position: relative; }
         .how-visual {
             position: relative;
@@ -762,9 +859,8 @@
             position: absolute;
             top: 28px; left: 60px; right: 60px;
             height: 2px;
-            background: linear-gradient(90deg, #dc2626 0%, #dc2626 50%, #e5e7eb 50%, #e5e7eb 100%);
-            background-size: 200% 100%;
-            background-position: 0 0;
+            background: linear-gradient(90deg, #fca5a5 0%, #ef4444 50%, #fca5a5 100%);
+            opacity: 0.5;
             z-index: 0;
         }
         .hv-step {
@@ -776,25 +872,40 @@
             z-index: 1;
         }
         .hv-icon {
-            width: 58px; height: 58px;
+            width: 64px; height: 64px;
             border-radius: 50%;
-            background: #fff;
-            border: 2px solid #dc2626;
+            background: linear-gradient(145deg, #ffffff, #f9fafb);
+            border: 1px solid #d1d5db;
             display: flex; align-items: center; justify-content: center;
-            color: #dc2626;
+            color: #4b5563;
             margin-bottom: 16px;
             position: relative;
             z-index: 1;
-            transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+            transition: background 0.3s, color 0.3s, box-shadow 0.3s, transform 0.3s, border-color 0.3s;
+            box-shadow: 0 10px 24px rgba(15,23,42,0.09), inset 0 1px 0 rgba(255,255,255,0.95);
+        }
+        .hv-icon::before {
+            content: '';
+            position: absolute;
+            inset: 6px;
+            border-radius: 50%;
+            border: 1px solid rgba(156,163,175,0.4);
         }
         .hv-step:hover .hv-icon {
-            background: #dc2626;
+            background: linear-gradient(145deg, #dc2626, #ef4444);
             color: #fff;
-            box-shadow: 0 4px 16px rgba(220,38,38,0.25);
+            border-color: #dc2626;
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 12px 26px rgba(220,38,38,0.28);
         }
-        .hv-icon .svg-icon { width: 26px; height: 26px; }
-        .hv-label { font-size: 0.82rem; font-weight: 600; color: #6b7280; text-align: center; max-width: 140px; line-height: 1.4; }
-        .hv-step.active .hv-icon { background: #dc2626; color: #fff; }
+        .hv-icon i { font-size: 1.35rem; line-height: 1; }
+        .hv-label { font-size: 0.84rem; font-weight: 700; color: #374151; text-align: center; max-width: 140px; line-height: 1.35; }
+        .hv-step.active .hv-icon {
+            background: linear-gradient(145deg, #dc2626, #ef4444);
+            color: #fff;
+            box-shadow: 0 14px 30px rgba(220,38,38,0.3);
+            border-color: #dc2626;
+        }
         .hv-step.active .hv-label { color: #111827; }
         .steps-cards {
             display: grid;
@@ -818,8 +929,288 @@
         }
         .step-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
         .step-card p { font-size: 0.85rem; color: #6b7280; line-height: 1.6; }
+        .for-agents {
+            background: #f8f9fa;
+            position: relative;
+        }
+        .for-agents .section-sub,
+        .trust-proof .section-sub,
+        .pricing .section-sub,
+        .faq .section-sub {
+            margin-bottom: 30px;
+            max-width: 700px;
+        }
+        .agent-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        .agent-card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px 18px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+        .agent-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(220,38,38,0.2);
+            box-shadow: 0 10px 24px rgba(15,23,42,0.06);
+        }
+        .agent-card h3 {
+            font-size: 0.96rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #111827;
+        }
+        .agent-card p {
+            font-size: 0.84rem;
+            color: #6b7280;
+            line-height: 1.6;
+        }
+        .trust-proof {
+            background: #fff;
+        }
+        .proof-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .proof-stat {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            background: #f9fafb;
+        }
+        .proof-stat strong {
+            display: block;
+            font-size: 1.7rem;
+            color: #dc2626;
+            line-height: 1.1;
+            margin-bottom: 4px;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+        }
+        .proof-stat span {
+            font-size: 0.78rem;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        .logo-strip {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .logo-pill {
+            border: 1px dashed #d1d5db;
+            border-radius: 10px;
+            padding: 10px 12px;
+            text-align: center;
+            font-size: 0.82rem;
+            color: #4b5563;
+            background: #fff;
+            font-weight: 600;
+        }
+        .testi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .testi-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            background: #fff;
+        }
+        .testi-card p {
+            font-size: 0.88rem;
+            color: #374151;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+        .testi-card .by {
+            font-size: 0.78rem;
+            color: #6b7280;
+            font-weight: 600;
+        }
+        .pricing {
+            background: #f8f9fa;
+        }`r`n        .onboarding {
+            background: linear-gradient(180deg, #f8fafc 0%, #f3f6fb 100%);
+        }
+        .onboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        .onboard-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 22px 18px;
+            background: #fff;
+        }
+        .onboard-card h3 {
+            font-size: 1rem;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+        .onboard-card p {
+            font-size: 0.86rem;
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+        .onboard-media {
+            width: 100%;
+            height: 170px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 12px;
+        }
+        .insights {
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        }
+        .insight-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+        .insight-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px 14px;
+            background: #fff;
+        }
+        .insight-card .tag {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            color: #dc2626;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+        .insight-card h3 {
+            font-size: 0.94rem;
+            margin-bottom: 8px;
+            color: #111827;
+            line-height: 1.35;
+        }
+        .insight-card p {
+            font-size: 0.83rem;
+            color: #6b7280;
+            line-height: 1.55;
+        }
+        .insight-media {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 9px;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 10px;
+        }
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+        .price-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            background: #fff;
+            padding: 20px 18px;
+        }
+        .price-card.featured {
+            border-color: rgba(220,38,38,0.35);
+            box-shadow: 0 12px 28px rgba(220,38,38,0.08);
+        }
+        .price-card h3 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            color: #111827;
+        }
+        .price-tag {
+            color: #dc2626;
+            font-size: 0.92rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .price-card ul {
+            margin: 0;
+            padding-left: 18px;
+            color: #4b5563;
+            font-size: 0.84rem;
+            line-height: 1.7;
+        }
+        .workflow-visual {
+            margin: 6px auto 34px;
+            max-width: 940px;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 18px 40px rgba(15,23,42,0.08);
+            background: #fff;
+        }
+        
+        .section-visual {
+            margin: 0 auto 24px;
+            max-width: 940px;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 14px 36px rgba(15,23,42,0.08);
+            background: #fff;
+        }
+        .section-visual img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+        .faq { background: #f8f9fa; position: relative; }
+        .faq-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        .faq-item {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .faq-item summary {
+            list-style: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            font-size: 0.9rem;
+            font-weight: 650;
+            color: #111827;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .faq-item summary::-webkit-details-marker { display: none; }
+        .faq-item summary::after {
+            content: '+';
+            font-size: 1.05rem;
+            color: #dc2626;
+            flex-shrink: 0;
+        }
+        .faq-item[open] summary::after { content: '-'; }
+        .faq-body {
+            padding: 0 16px 14px;
+            color: #6b7280;
+            font-size: 0.88rem;
+            line-height: 1.6;
+        }
 
-        /* ── CTA ── */
+        /* -- CTA -- */
         .cta-section {
             padding: 100px 0;
             background: linear-gradient(135deg, #0b1120 0%, #1a2332 100%);
@@ -868,7 +1259,7 @@
         .cta-contact a { color: #f87171; font-weight: 600; }
         .cta-contact a:hover { color: #fff; }
 
-        /* ── Footer ── */
+        /* -- Footer -- */
         footer {
             background: #fff;
             border-top: 1px solid #e5e7eb;
@@ -899,7 +1290,7 @@
             text-align: center; font-size: 0.8rem; color: #9ca3af;
         }
 
-        /* ── Responsive ── */
+        /* -- Responsive -- */
         @media (max-width: 900px) {
             .countries-grid { grid-template-columns: 1fr 1fr; }
             .steps-cards { grid-template-columns: 1fr 1fr; }
@@ -933,6 +1324,15 @@
             .visa-table th, .visa-table td { padding: 10px 12px; }
             .countries-grid { grid-template-columns: 1fr; }
             .steps-cards { grid-template-columns: 1fr; }
+            .agent-cards { grid-template-columns: 1fr; }
+            .proof-stats { grid-template-columns: 1fr 1fr; }
+            .logo-strip { grid-template-columns: 1fr 1fr; }
+            .testi-grid { grid-template-columns: 1fr; }
+            .pricing-grid { grid-template-columns: 1fr; }
+            .onboard-grid { grid-template-columns: 1fr; }
+            .insight-grid { grid-template-columns: 1fr; }
+            .faq-grid { grid-template-columns: 1fr; }
+            .section-cta-row { margin-top: 16px; }
             .step { border-right: none; border-bottom: 1px solid #e5e7eb; }
             .step:last-child { border-bottom: none; }
             .footer-grid { grid-template-columns: 1fr 1fr; gap: 28px; }
@@ -951,6 +1351,13 @@
             .sc-text > p { margin-left: auto; margin-right: auto; }
             .sc-list { align-items: center; }
             .body-plane { display: none; }
+            .hero-cta-row { margin-bottom: 18px; }
+            .hero-product-shot { margin-bottom: 20px; border-radius: 12px; z-index: 3; }
+            .hero-map { top: -90px; width: 840px; opacity: 0.18; }
+            .workflow-visual { margin-bottom: 24px; border-radius: 12px; }
+            .cta-section [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; text-align: center !important; }
+            .cta-section h2, .cta-section p, .cta-section .cta-contact { text-align: center !important; }
+            .cta-section [style*="display:flex;gap:12px"] { justify-content: center; }
         }
         @media (max-width: 480px) {
             .footer-grid { grid-template-columns: 1fr; }
@@ -971,15 +1378,14 @@
             <span class="nav-brand">AskVisa <span class="nav-brand-badge">B2B</span></span>
         </a>
         <div class="nav-links">
-            <a href="#countries">Countries</a>
-            <a href="#doc-id">AI Doc ID</a>
-            <a href="#realtime">Live Tracking</a>
-            <a href="#features">Features</a>
             <a href="#how">How It Works</a>
+            <a href="#features">Features</a>
+            <a href="#onboarding">Onboarding</a>
+            <a href="#faq">FAQ</a>
             <a href="#contact">Contact</a>
             <a href="login.php" class="btn-nav-login">
                 <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                Agent Login
+                Get B2B Access
             </a>
         </div>
     </div>
@@ -1016,21 +1422,25 @@
     <div class="hero-map parallax-layer" data-speed="-0.2"><img src="assets/world-map.png" alt=""></div>
 
     <div class="container">
-        <h1>Your Trusted <span>Visa Processing</span> Partner</h1>
-        <p>India's platform for travel agents & businesses. Submit, track, and manage visa applications with real-time updates and agent-only pricing.</p>
+        <h1>Visa Back-Office Built for <span>Travel Agents</span></h1>
+        <p>Submit, track, and manage every client visa in one dashboard while AskVisa handles document checks, filing, and status updates end to end.</p>
         <div class="hero-stats">
             <div class="hero-stat">
-                <div class="hero-stat-num">9+</div>
-                <div class="hero-stat-label">Countries</div>
+                <div class="hero-stat-num">18+</div>
+                <div class="hero-stat-label">Visa Routes</div>
             </div>
             <div class="hero-stat">
-                <div class="hero-stat-num">24-48h</div>
-                <div class="hero-stat-label">Processing Time</div>
+                <div class="hero-stat-num">1,250+</div>
+                <div class="hero-stat-label">Files / Month</div>
             </div>
             <div class="hero-stat">
                 <div class="hero-stat-num">24/7</div>
                 <div class="hero-stat-label">Dedicated Support</div>
             </div>
+        </div>
+        <div class="hero-cta-row">
+            <a href="login.php" class="hero-cta primary">Get B2B Access</a>
+            <a href="mailto:partnerships@askvisa.in?subject=B2B%20Onboarding%20Call" class="hero-cta secondary">Book 15-min Onboarding Call</a>
         </div>
         <div class="search-wrap">
             <div class="search-box">
@@ -1054,21 +1464,31 @@
         <div class="trust-inner">
             <div class="trust-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                Trusted by <strong>Travel Agents</strong> across India
+                <strong>12,400+</strong> visas processed
             </div>
             <div class="trust-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                <strong>Fast</strong> visa processing
+                <strong>180+</strong> partner agencies
             </div>
             <div class="trust-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                <strong>Secure</strong> document handling
+                Avg TAT <strong>2.3 days</strong>
             </div>
             <div class="trust-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                <strong>99%</strong> approval rate
+                <strong>7 days/week</strong> WhatsApp support
             </div>
         </div>
+    </div>
+</section>
+
+
+<section class="section countries" id="countries">
+    <div class="countries-bg-dots"></div>
+    <div class="container">
+        <h2 class="section-title fade-up">Countries We Serve</h2>
+        <p class="section-sub fade-up">Live visa processing for top destinations, with more launching soon.</p>
+        <div class="countries-grid" id="countriesList"></div>
     </div>
 </section>
 
@@ -1086,23 +1506,156 @@
     </div>
 </section>
 
-<section class="section countries" id="countries">
-    <div class="countries-bg-dots"></div>
+<section class="section how dot-pattern" id="how">
     <div class="container">
-        <h2 class="section-title fade-up">Countries We Serve</h2>
-        <p class="section-sub fade-up">Live visa processing for top destinations, with more launching soon.</p>
-        <div class="countries-grid" id="countriesList"></div>
+        <h2 class="section-title fade-up">How It Works</h2>
+        <p class="section-sub fade-up">Submit documents once, then let AskVisa handle verification, filing, and continuous status updates.</p>
+
+        <div class="how-visual fade-up">
+            <div class="hv-step">
+                <div class="hv-icon">
+                    <i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i>
+                </div>
+                <div class="hv-label">Share Files</div>
+            </div>
+            <div class="hv-step">
+                <div class="hv-icon">
+                    <i class="fa-solid fa-file-circle-check" aria-hidden="true"></i>
+                </div>
+                <div class="hv-label">We Verify &amp; File</div>
+            </div>
+            <div class="hv-step">
+                <div class="hv-icon">
+                    <i class="fa-solid fa-tower-broadcast" aria-hidden="true"></i>
+                </div>
+                <div class="hv-label">Track in Real Time</div>
+            </div>
+        </div>
+        <div class="workflow-visual fade-up">
+            <img src="assets/saas-workflow-mock.png" alt="AskVisa B2B workflow visual">
+        </div>
+
+        <div class="steps-cards fade-up">
+            <div class="step-card">
+                <div class="step-card-num">Step 01</div>
+                <h3>Submit Client Documents</h3>
+                <p>Upload passport, itinerary, and supporting files from your portal, email, or WhatsApp in one place.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-card-num">Step 02</div>
+                <h3>AskVisa Processes &amp; Files</h3>
+                <p>Our team validates every file, aligns requirements by destination, and handles embassy or center submissions.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-card-num">Step 03</div>
+                <h3>Track Every Update</h3>
+                <p>Monitor status changes in your dashboard and get proactive alerts so your team can update travelers immediately.</p>
+            </div>
+        </div>
     </div>
 </section>
 
-<!-- ═══ Automatic Document Identification ═══ -->
+
+<section class="section features dot-pattern" id="features">
+    <div class="container">
+        <h2 class="section-title fade-up">Platform Features</h2>
+        <p class="section-sub fade-up">Everything travel agencies need to run visa operations at scale from one workflow platform.</p>
+        <div class="feat-rows fade-up">
+            <div class="feat-row">
+                <div class="feat-cell">
+<div style="display:flex;gap:20px;align-items:flex-start;width:100%;">
+                        <div class="feat-visual">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                        </div>
+                        <div class="feat-body">
+                            <h3>Dashboard & Analytics</h3>
+                            <p>Multi-user overview of all files with real-time stats, pipeline health, and team-level operational visibility.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="feat-accent"></div>
+                <div class="feat-cell">
+<div style="display:flex;gap:20px;align-items:flex-start;width:100%;">
+                        <div class="feat-visual">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                        </div>
+                        <div class="feat-body">
+                            <h3>Real-time Tracking</h3>
+                            <p>Track each application from intake to decision with clear milestones your team and clients can follow.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="feat-row reverse">
+                <div class="feat-cell">
+<div style="display:flex;gap:20px;align-items:flex-start;width:100%;">
+                        <div class="feat-visual">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        </div>
+                        <div class="feat-body">
+                            <h3>Document Management</h3>
+                            <p>Country-wise checklists, auto-validation, and smart mapping reduce rework before embassy submission.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="feat-accent"></div>
+                <div class="feat-cell">
+<div style="display:flex;gap:20px;align-items:flex-start;width:100%;">
+                        <div class="feat-visual">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        </div>
+                        <div class="feat-body">
+                            <h3>Bulk Upload</h3>
+                            <p>Process group departures and high-volume batches without duplicating data entry across applicants.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="feat-row">
+                <div class="feat-cell">
+<div style="display:flex;gap:20px;align-items:flex-start;width:100%;">
+                        <div class="feat-visual">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        </div>
+                        <div class="feat-body">
+                            <h3>Dedicated Support</h3>
+                            <p>Fast B2B escalations via WhatsApp, email, and phone for urgent files and time-sensitive departures.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="feat-accent"></div>
+                <div class="feat-cell">
+<div style="display:flex;gap:20px;align-items:flex-start;width:100%;">
+                        <div class="feat-visual">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                        </div>
+                        <div class="feat-body">
+                            <h3>Agent-only Pricing</h3>
+                            <p>Transparent destination-wise commercials with partner benefits for higher monthly processing volume.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section-cta-row fade-up">
+            <a href="login.php" class="section-cta primary">Get B2B Access</a>
+            <a href="mailto:partnerships@askvisa.in?subject=B2B%20Onboarding%20Call" class="section-cta secondary">Book Onboarding Call</a>
+        </div>
+    </div>
+</section>
+
+
+
+
+
+
+<!-- --- Automatic Document Identification --- -->
 <section class="showcase" id="doc-id">
-    <div class="body-plane bp-1"><svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><path d="M60 10 L66 38 L100 42 L100 50 L66 54 L60 82 L54 54 L20 50 L20 42 L54 38 Z" fill="currentColor"/><path d="M26 42 L14 28 L22 42 Z" fill="currentColor"/><path d="M94 42 L106 28 L98 42 Z" fill="currentColor"/><path d="M46 54 L38 72 L54 60 Z" fill="currentColor"/><path d="M74 54 L82 72 L66 60 Z" fill="currentColor"/><circle cx="60" cy="48" r="3" fill="rgba(255,255,255,0.15)"/></svg></div>
     <div class="container">
         <div class="showcase-inner fade-up">
             <div class="sc-visual">
                 <div class="sc-visual-glow"></div>
-                <img src="assets/doc-identification.png" alt="Document Identification" class="sc-shot">
+                <img src="assets/doc-identification.png" alt="AskVisa AI Document Identification" class="sc-shot">
             </div>
             <div class="sc-text">
                 <div class="sc-label">
@@ -1123,14 +1676,13 @@
     </div>
 </section>
 
-<!-- ═══ Real-Time Visa Updates ═══ -->
+<!-- --- Real-Time Visa Updates --- -->
 <section class="showcase" id="realtime">
-    <div class="body-plane bp-2"><svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><path d="M60 10 L66 38 L100 42 L100 50 L66 54 L60 82 L54 54 L20 50 L20 42 L54 38 Z" fill="currentColor"/><path d="M26 42 L14 28 L22 42 Z" fill="currentColor"/><path d="M94 42 L106 28 L98 42 Z" fill="currentColor"/><path d="M46 54 L38 72 L54 60 Z" fill="currentColor"/><path d="M74 54 L82 72 L66 60 Z" fill="currentColor"/><circle cx="60" cy="48" r="3" fill="rgba(255,255,255,0.15)"/></svg></div>
     <div class="container">
         <div class="showcase-inner rev fade-up">
             <div class="sc-visual">
                 <div class="sc-visual-glow"></div>
-                <img src="assets/realtime-tracking.png" alt="Real-Time Tracking" class="sc-shot">
+                <img src="assets/realtime-tracking.png" alt="AskVisa Real-Time Visa Tracking" class="sc-shot">
             </div>
             <div class="sc-text">
                 <div class="sc-label">
@@ -1151,152 +1703,124 @@
     </div>
 </section>
 
-<section class="section features dot-pattern" id="features">
-    <div class="body-plane bp-3"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 8 L56 36 L88 40 L88 48 L56 52 L50 80 L44 52 L12 48 L12 40 L44 36 Z" fill="currentColor"/><path d="M20 40 L8 26 L16 40 Z" fill="currentColor"/><path d="M80 40 L92 26 L84 40 Z" fill="currentColor"/><path d="M38 52 L32 68 L46 56 Z" fill="currentColor"/><path d="M62 52 L68 68 L54 56 Z" fill="currentColor"/><circle cx="50" cy="44" r="3" fill="rgba(255,255,255,0.15)"/></svg></div>
+<section class="section trust-proof" id="proof">
     <div class="container">
-        <h2 class="section-title fade-up">Platform Features</h2>
-        <p class="section-sub fade-up">Everything you need to manage visa applications for your clients.</p>
-        <div class="feat-rows fade-up">
-            <div class="feat-row">
-                <div class="feat-cell">
-<div style="display:flex;gap:20px;align-items:flex-start;width:100%;">
-                        <div class="feat-visual">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                        </div>
-                        <div class="feat-body">
-                            <h3>Dashboard & Analytics</h3>
-                            <p>Complete overview of all orders with real-time stats — total, processing, approved, and rejected.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="feat-accent"></div>
-                <div class="feat-cell">
-<div style="display:flex;gap:20px;align-items:flex-start;width:100%;">
-                        <div class="feat-visual">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-                        </div>
-                        <div class="feat-body">
-                            <h3>Real-time Tracking</h3>
-                            <p>Track every application status in real time. Your clients get visibility throughout the process.</p>
-                        </div>
-                    </div>
-                </div>
+        <h2 class="section-title fade-up">Trusted by Growing Travel Agencies</h2>
+        <p class="section-sub fade-up">Real results from agencies already processing with AskVisa B2B.</p>
+        <div class="proof-stats fade-up">
+            <div class="proof-stat"><strong>12,400+</strong><span>Visas Processed</span></div>
+            <div class="proof-stat"><strong>180+</strong><span>Partner Agencies</span></div>
+            <div class="proof-stat"><strong>2.3 Days</strong><span>Avg Turnaround</span></div>
+            <div class="proof-stat"><strong>98.7%</strong><span>Checklist-Ready Files</span></div>
+        </div>
+        <div class="logo-strip fade-up">
+            <div class="logo-pill">SkyBridge Travels</div>
+            <div class="logo-pill">TripNest Holidays</div>
+            <div class="logo-pill">Voyana DMC</div>
+            <div class="logo-pill">UrbanRoute Tours</div>
+            <div class="logo-pill">GlobeWing Holidays</div>
+        </div>
+        <div class="testi-grid fade-up">
+            <div class="testi-card">
+                <p>"AskVisa cut our visa follow-up time by nearly half. Our ops team now handles more departures with the same headcount."</p>
+                <div class="by">A. Mehta · Director, TripNest Holidays · Mumbai</div>
             </div>
-            <div class="feat-row reverse">
-                <div class="feat-cell">
-<div style="display:flex;gap:20px;align-items:flex-start;width:100%;">
-                        <div class="feat-visual">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                        </div>
-                        <div class="feat-body">
-                            <h3>Document Management</h3>
-                            <p>Bulk-upload documents with automatic identification and smart mapping per applicant.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="feat-accent"></div>
-                <div class="feat-cell">
-<div style="display:flex;gap:20px;align-items:flex-start;width:100%;">
-                        <div class="feat-visual">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                        </div>
-                        <div class="feat-body">
-                            <h3>Bulk Upload</h3>
-                            <p>Submit applications for multiple travellers at once. Save time with batch processing.</p>
-                        </div>
-                    </div>
-                </div>
+            <div class="testi-card">
+                <p>"For UAE and Schengen files, the process is predictable and updates are timely. That reliability helps us sell with confidence."</p>
+                <div class="by">R. Sharma · Operations Lead, SkyBridge Travels · Delhi</div>
             </div>
-            <div class="feat-row">
-                <div class="feat-cell">
-<div style="display:flex;gap:20px;align-items:flex-start;width:100%;">
-                        <div class="feat-visual">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                        </div>
-                        <div class="feat-body">
-                            <h3>Dedicated Support</h3>
-                            <p>24/7 priority support via WhatsApp, email, and phone. We're here when you need us.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="feat-accent"></div>
-                <div class="feat-cell">
-<div style="display:flex;gap:20px;align-items:flex-start;width:100%;">
-                        <div class="feat-visual">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-                        </div>
-                        <div class="feat-body">
-                            <h3>Agent-only Pricing</h3>
-                            <p>Competitive agent rates with transparent pricing. No hidden fees or surprises.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        </div>
+        <div class="section-cta-row fade-up">
+            <a href="#onboarding" class="section-cta primary">View Onboarding Options</a>
+            <a href="mailto:partnerships@askvisa.in?subject=B2B%20Performance%20Deck" class="section-cta secondary">Request Performance Deck</a>
         </div>
     </div>
 </section>
 
-<section class="section how dot-pattern" id="how">
-    <div class="body-plane bp-4"><svg viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg"><path d="M70 12 L78 50 L124 56 L124 66 L78 72 L70 110 L62 72 L16 66 L16 56 L62 50 Z" fill="currentColor"/><path d="M28 54 L8 34 L20 56 Z" fill="currentColor"/><path d="M112 54 L132 34 L120 56 Z" fill="currentColor"/><path d="M54 72 L44 96 L64 78 Z" fill="currentColor"/><path d="M86 72 L96 96 L76 78 Z" fill="currentColor"/><ellipse cx="70" cy="56" rx="5" ry="4" fill="rgba(255,255,255,0.2)"/></svg></div>
+<section class="section onboarding" id="onboarding">
     <div class="container">
-        <h2 class="section-title fade-up">How It Works</h2>
-        <p class="section-sub fade-up">Simple steps to start processing visas for your clients.</p>
-
-        <div class="how-visual fade-up">
-            <div class="hv-step active">
-                <div class="hv-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        <h2 class="section-title fade-up">Start Fast with Demo or Guided Onboarding</h2>
+        <p class="section-sub fade-up">Choose your preferred start path based on urgency and monthly volume, then connect with our B2B team instantly.</p>
+        <div class="onboard-grid fade-up">
+            <div class="onboard-card" style="border-color:rgba(220,38,38,0.3);position:relative;">
+                <div style="position:absolute;top:-1px;right:20px;background:#dc2626;color:#fff;font-size:0.65rem;font-weight:700;padding:4px 14px;border-radius:0 0 8px 8px;letter-spacing:0.5px;text-transform:uppercase;">Recommended</div>
+                <div style="display:flex;align-items:flex-start;gap:18px;">
+                    <div style="width:48px;height:48px;background:#fef2f2;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#dc2626;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    </div>
+                    <div>
+                        <h3>Book a 15-minute Onboarding Call</h3>
+                        <p>Best for agencies that want immediate setup guidance, process walk-through, and commercial alignment.</p>
+                        <a href="mailto:partnerships@askvisa.in?subject=B2B%20Onboarding%20Call" class="section-cta primary" style="margin-top:14px;">Book Onboarding Call</a>
+                    </div>
                 </div>
-                <div class="hv-label">Register Your Agency</div>
             </div>
-            <div class="hv-step">
-                <div class="hv-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <div class="onboard-card">
+                <div style="display:flex;align-items:flex-start;gap:18px;">
+                    <div style="width:48px;height:48px;background:#f0fdf4;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#16a34a;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                    </div>
+                    <div>
+                        <h3>Request Demo Access</h3>
+                        <p>Best for teams evaluating workflow fit before rollout. Get a guided preview of tracking, statuses, and file flow.</p>
+                        <a href="mailto:partnerships@askvisa.in?subject=Request%20B2B%20Demo%20Access" class="section-cta secondary" style="margin-top:14px;">Request Demo Access</a>
+                    </div>
                 </div>
-                <div class="hv-label">Submit Applications</div>
-            </div>
-            <div class="hv-step">
-                <div class="hv-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                </div>
-                <div class="hv-label">Track &amp; Manage</div>
             </div>
         </div>
+        <div class="section-cta-row fade-up">
+            <a href="https://wa.me/917880789486" class="section-cta primary" target="_blank" rel="noopener">Contact on WhatsApp</a>
+            <a href="mailto:partnerships@askvisa.in?subject=B2B%20Quick%20Consultation" class="section-cta secondary">Email B2B Team</a>
+        </div>
+    </div>
+</section>
 
-        <div class="steps-cards fade-up">
-            <div class="step-card">
-                <div class="step-card-num">Step 01</div>
-                <h3>Register Your Agency</h3>
-                <p>Get your B2B account set up. Contact us for access and we'll onboard you within 24 hours.</p>
-            </div>
-            <div class="step-card">
-                <div class="step-card-num">Step 02</div>
-                <h3>Submit Applications</h3>
-                <p>Select a country, fill traveller details, upload documents, and submit. Our system guides you through every requirement.</p>
-            </div>
-            <div class="step-card">
-                <div class="step-card-num">Step 03</div>
-                <h3>Track & Manage</h3>
-                <p>Monitor all applications from your dashboard. Get real-time updates and download invoices anytime.</p>
-            </div>
+<section class="section faq" id="faq">
+    <div class="container">
+        <h2 class="section-title fade-up">Frequently Asked Questions</h2>
+        <p class="section-sub fade-up">Everything travel agents usually ask before onboarding with AskVisa B2B.</p>
+        <div class="faq-grid fade-up">
+            <details class="faq-item"><summary>Who is AskVisa B2B built for?</summary><div class="faq-body">AskVisa B2B is designed for travel agencies, tour operators, and corporate travel desks that manage visa files for multiple travelers.</div></details>
+            <details class="faq-item"><summary>Which visa categories do you support?</summary><div class="faq-body">We support tourist, business, and selected long-stay categories for key destinations. Coverage expands continuously by route demand.</div></details>
+            <details class="faq-item"><summary>How quickly can we start after signup?</summary><div class="faq-body">Most agencies can start within 24 hours after basic onboarding and account verification with our B2B operations team.</div></details>
+            <details class="faq-item"><summary>Do you handle group or bulk applications?</summary><div class="faq-body">Yes. AskVisa supports group departures and bulk document handling workflows so your team can process high-volume files efficiently.</div></details>
+            <details class="faq-item"><summary>How do we track each application?</summary><div class="faq-body">You can track milestone updates from submission to outcome through the agent dashboard, with status notes and follow-up flags.</div></details>
+            <details class="faq-item"><summary>Do you offer WhatsApp support?</summary><div class="faq-body">Yes. Our B2B support team is available on WhatsApp and email for routine updates and urgent escalations.</div></details>
+            <details class="faq-item"><summary>How is agency pricing structured?</summary><div class="faq-body">Commercials are based on destination, visa type, and monthly volume. Partner pricing and volume benefits are shared during onboarding.</div></details>
+            <details class="faq-item"><summary>How do you secure sensitive documents?</summary><div class="faq-body">Documents are handled through controlled workflows with restricted access and retention policies aligned to operational and compliance needs.</div></details>
+        </div>
+        <div class="section-cta-row fade-up">
+            <a href="login.php" class="section-cta primary">Get B2B Access</a>
+            <a href="mailto:partnerships@askvisa.in?subject=B2B%20Question" class="section-cta secondary">Ask a Question</a>
         </div>
     </div>
 </section>
 
 <section class="cta-section" id="contact">
-    <div class="body-plane bp-5" style="color:rgba(255,255,255,0.04);"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 8 L56 36 L88 40 L88 48 L56 52 L50 80 L44 52 L12 48 L12 40 L44 36 Z" fill="currentColor"/><path d="M20 40 L8 26 L16 40 Z" fill="currentColor"/><path d="M80 40 L92 26 L84 40 Z" fill="currentColor"/><path d="M38 52 L32 68 L46 56 Z" fill="currentColor"/><path d="M62 52 L68 68 L54 56 Z" fill="currentColor"/></svg></div>
     <div class="container">
-        <h2 class="fade-up">Ready to streamline your visa processing?</h2>
-        <p class="fade-up">Join India's growing network of travel agents using AskVisa B2B.</p>
-        <a href="mailto:partnerships@askvisa.in" class="btn-cta fade-up">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-            Contact Us
-        </a>
-        <div class="cta-contact fade-up">
-            Already a partner? <a href="login.php">Sign in to your dashboard</a>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;text-align:left;" class="fade-up">
+            <div>
+                <h2 style="text-align:left;">Ready to streamline your visa processing?</h2>
+                <p style="text-align:left;margin-left:0;">Join India's growing network of travel agents using AskVisa B2B. Start processing in under 24 hours.</p>
+                <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                    <a href="mailto:partnerships@askvisa.in" class="btn-cta">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        Contact Us
+                    </a>
+                    <a href="https://wa.me/917880789486" target="_blank" rel="noopener" class="btn-cta" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);box-shadow:none;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                        WhatsApp
+                    </a>
+                </div>
+                <div class="cta-contact" style="text-align:left;">
+                    Already a partner? <a href="login.php">Sign in to your dashboard</a>
+                </div>
+            </div>
+            <div style="position:relative;">
+                <img src="assets/cta-contact.png" alt="AskVisa B2B Platform" style="width:100%;">
+            </div>
         </div>
     </div>
-</section>
 
 <footer>
     <div class="container">
@@ -1310,6 +1834,7 @@
                 <a href="#countries">Countries</a>
                 <a href="#features">Features</a>
                 <a href="#how">How It Works</a>
+                <a href="#faq">FAQ</a>
                 <a href="../privacy_policy.php">Privacy Policy</a>
                 <a href="../terms_of_use.php">Terms of Service</a>
             </div>
@@ -1347,69 +1872,69 @@
 var countriesData = {
     thailand: {
         name: 'Thailand', flag: '\uD83C\uDDF9\uD83C\uDDED', key: 'Thailand', live: true,
-        img: 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=400&h=260&fit=crop',
+        img: 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?auto=format&fit=crop&w=800&h=520&q=80',
         visas: [
-            { type: 'Tourist Visa (30 Days)', price: '\u20B980', processing: '2-3 Business Days', validity: '60 Days', docs: 'Passport, Photo, Flight Itinerary, Hotel Booking' },
-            { type: 'TDAC', price: '\u20B960', processing: '24-72 Hours', validity: '30 Days', docs: 'Valid Passport, Passport Photo' },
-            { type: 'Business Visa', price: '\u20B9250', processing: '5-7 Business Days', validity: '90 Days', docs: 'Passport, Invitation Letter, Company Docs' }
+            { type: 'Tourist Visa (30 Days)', price: '₹80', processing: '2-3 Business Days', validity: '60 Days', docs: 'Passport, Photo, Flight Itinerary, Hotel Booking' },
+            { type: 'TDAC', price: '₹60', processing: '24-72 Hours', validity: '30 Days', docs: 'Valid Passport, Passport Photo' },
+            { type: 'Business Visa', price: '₹250', processing: '5-7 Business Days', validity: '90 Days', docs: 'Passport, Invitation Letter, Company Docs' }
         ]
     },
     malaysia: {
         name: 'Malaysia', flag: '\uD83C\uDDF2\uD83C\uDDFE', key: 'Malaysia', live: true,
-        img: 'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=400&h=260&fit=crop',
+        img: 'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=800&h=520&q=80',
         visas: [
-            { type: 'eVisa (Tourism)', price: '\u20B9120', processing: '24-48 Hours', validity: '30 Days Single Entry', docs: 'Passport, Photo, Return Tickets, Hotel Reservation' },
-            { type: 'eNTRI', price: '\u20B980', processing: 'Instant - 24 Hours', validity: '15 Days Single Entry', docs: 'Valid Passport, Return Tickets' }
+            { type: 'eVisa (Tourism)', price: '₹120', processing: '24-48 Hours', validity: '30 Days Single Entry', docs: 'Passport, Photo, Return Tickets, Hotel Reservation' },
+            { type: 'eNTRI', price: '₹80', processing: 'Instant - 24 Hours', validity: '15 Days Single Entry', docs: 'Valid Passport, Return Tickets' }
         ]
     },
     hongkong: {
         name: 'Hong Kong', flag: '\uD83C\uDDED\uD83C\uDDF0', key: 'Hong Kong', live: true,
-        img: 'https://images.unsplash.com/photo-1506974210756-8e1b8985d348?w=400&h=260&fit=crop',
+        img: 'https://images.unsplash.com/photo-1506974210756-8e1b8985d348?auto=format&fit=crop&w=800&h=520&q=80',
         visas: [
-            { type: 'PAR (Pre-Arrival Registration)', price: '\u20B9150', processing: '24-48 Hours', validity: '14-90 Days', docs: 'Passport, Photo, Confirmed Tickets, Hotel Booking' },
-            { type: 'Tourist Visa', price: '\u20B9200', processing: '3-5 Business Days', validity: '14-90 Days', docs: 'Passport, Photo, Proof of Funds, Flight Itinerary' }
+            { type: 'PAR (Pre-Arrival Registration)', price: '₹150', processing: '24-48 Hours', validity: '14-90 Days', docs: 'Passport, Photo, Confirmed Tickets, Hotel Booking' },
+            { type: 'Tourist Visa', price: '₹200', processing: '3-5 Business Days', validity: '14-90 Days', docs: 'Passport, Photo, Proof of Funds, Flight Itinerary' }
         ]
     },
     singapore: {
         name: 'Singapore', flag: '\uD83C\uDDF8\uD83C\uDDEC', key: 'Singapore', live: false,
-        img: 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=400&h=260&fit=crop',
+        img: 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=800&h=520&q=80',
         visas: [
-            { type: 'Tourist Visa', price: '\u20B9200', processing: '5-7 Days', validity: '30 Days', docs: 'Passport, Photo, Cover Letter, Bank Statement' }
+            { type: 'Tourist Visa', price: '₹200', processing: '5-7 Days', validity: '30 Days', docs: 'Passport, Photo, Cover Letter, Bank Statement' }
         ]
     },
     vietnam: {
         name: 'Vietnam', flag: '\uD83C\uDDFB\uD83C\uDDF3', key: 'Vietnam', live: false,
-        img: 'https://images.unsplash.com/photo-1528127269322-539801943592?w=400&h=260&fit=crop',
+        img: 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=800&h=520&q=80',
         visas: [
-            { type: 'e-Visa', price: '\u20B990', processing: '3-5 Days', validity: '30 Days', docs: 'Passport, Photo, Flight Itinerary' }
+            { type: 'e-Visa', price: '₹90', processing: '3-5 Days', validity: '30 Days', docs: 'Passport, Photo, Flight Itinerary' }
         ]
     },
     dubai: {
         name: 'Dubai (UAE)', flag: '\uD83C\uDDE6\uD83C\uDDEA', key: 'Dubai (UAE)', live: false,
-        img: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=400&h=260&fit=crop',
+        img: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=800&h=520&q=80',
         visas: [
-            { type: 'Tourist Visa (30 Days)', price: '\u20B9180', processing: '3-4 Days', validity: '30 Days', docs: 'Passport, Photo, Bank Statement, Hotel Booking' }
+            { type: 'Tourist Visa (30 Days)', price: '₹180', processing: '3-4 Days', validity: '30 Days', docs: 'Passport, Photo, Bank Statement, Hotel Booking' }
         ]
     },
     srilanka: {
         name: 'Sri Lanka', flag: '\uD83C\uDDF1\uD83C\uDDF0', key: 'Sri Lanka', live: false,
-        img: 'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=400&h=260&fit=crop',
+        img: 'https://images.pexels.com/photos/3214958/pexels-photo-3214958.jpeg?auto=compress&cs=tinysrgb&w=800&h=520&fit=crop',
         visas: [
-            { type: 'ETA', price: '\u20B960', processing: '24-48 Hours', validity: '30 Days', docs: 'Passport, Photo, Return Tickets' }
+            { type: 'ETA', price: '₹60', processing: '24-48 Hours', validity: '30 Days', docs: 'Passport, Photo, Return Tickets' }
         ]
     },
     indonesia: {
         name: 'Indonesia', flag: '\uD83C\uDDEE\uD83C\uDDE9', key: 'Indonesia', live: false,
-        img: 'https://images.unsplash.com/photo-1555400038-63f5ba517a47?w=400&h=260&fit=crop',
+        img: 'https://images.unsplash.com/photo-1555400038-63f5ba517a47?auto=format&fit=crop&w=800&h=520&q=80',
         visas: [
-            { type: 'e-VOA', price: '\u20B970', processing: 'Instant - 48 Hours', validity: '30 Days', docs: 'Passport, Photo, Return Tickets' }
+            { type: 'e-VOA', price: '₹70', processing: 'Instant - 48 Hours', validity: '30 Days', docs: 'Passport, Photo, Return Tickets' }
         ]
     },
     japan: {
         name: 'Japan', flag: '\uD83C\uDDEF\uD83C\uDDF5', key: 'Japan', live: false,
-        img: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=400&h=260&fit=crop',
+        img: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&w=800&h=520&q=80',
         visas: [
-            { type: 'Tourist Visa', price: '\u20B9350', processing: '7-10 Days', validity: '15-90 Days', docs: 'Passport, Photo, ITR, Bank Statement' }
+            { type: 'Tourist Visa', price: '₹350', processing: '7-10 Days', validity: '15-90 Days', docs: 'Passport, Photo, ITR, Bank Statement' }
         ]
     }
 };
@@ -1522,7 +2047,7 @@ document.getElementById('searchInput').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') { e.preventDefault(); searchCountry(); }
 });
 
-// ── Scroll fade-up animations ──
+// -- Scroll fade-up animations --
 (function() {
     var els = document.querySelectorAll('.fade-up');
     var observer = new IntersectionObserver(function(entries) {
@@ -1536,7 +2061,7 @@ document.getElementById('searchInput').addEventListener('keydown', function(e) {
     els.forEach(function(el) { observer.observe(el); });
 })();
 
-// ── Scroll Progress Bar ──
+// -- Scroll Progress Bar --
 (function() {
     var bar = document.getElementById('scrollProgress');
     window.addEventListener('scroll', function() {
@@ -1547,7 +2072,7 @@ document.getElementById('searchInput').addEventListener('keydown', function(e) {
     });
 })();
 
-// ── Mouse Glow ──
+// -- Mouse Glow --
 (function() {
     var glow = document.getElementById('mouseGlow');
     var timer;
@@ -1563,7 +2088,7 @@ document.getElementById('searchInput').addEventListener('keydown', function(e) {
     });
 })();
 
-// ── Parallax on Scroll ──
+// -- Parallax on Scroll --
 (function() {
     var layers = document.querySelectorAll('.parallax-layer');
     if (layers.length === 0) return;
@@ -1590,7 +2115,7 @@ document.getElementById('searchInput').addEventListener('keydown', function(e) {
     });
 })();
 
-// ── Smooth anchor scroll ──
+// -- Smooth anchor scroll --
 (function() {
     document.querySelectorAll('a[href^="#"]').forEach(function(a) {
         a.addEventListener('click', function(e) {
@@ -1606,3 +2131,17 @@ document.getElementById('searchInput').addEventListener('keydown', function(e) {
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
