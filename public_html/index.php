@@ -1046,7 +1046,7 @@ if (isset($_GET['ajax'])) {
                         unset($_SESSION['selected_visa']);
 
                         // Fetch questions
-                        $stmt = $pdo->prepare("SELECT * FROM country_questions WHERE country_id = ? ORDER BY sort_order ASC");
+                        $stmt = $pdo->prepare("SELECT * FROM country_questions WHERE country_id = ? AND is_active = 1 ORDER BY sort_order ASC");
                         $stmt->execute([$country['id']]);
                         $_SESSION['db_questions'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
